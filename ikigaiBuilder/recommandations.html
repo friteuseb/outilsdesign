@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommandations - Métiers et Opportunités</title>
+
+    <!-- Google Analytics 4 -->
+    <script src="../analytics.js"></script>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/recommandations.css">
+    <script src="js/navigation.js" defer></script>
+    <script src="js/recommandations.js" defer></script>
+    <script src="config.js"></script>
+    <script src="ai-coach.js"></script>
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🧠 Ikigai Builder</a>
+            
+            <button class="menu-toggle">☰</button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="formulaire.html" class="nav-link">
+                        <span class="nav-icon">📝</span>
+                        Mon Ikigai
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="coach.html" class="nav-link">
+                        <span class="nav-icon">🤖</span>
+                        Coach IA
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyse.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Analyse
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recommandations.html" class="nav-link active">
+                        <span class="nav-icon">🎯</span>
+                        Recommandations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="outils.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Outils
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page des recommandations -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1>🎯 Recommandations Personnalisées</h1>
+            <p>Métiers, formations et opportunités basés sur votre Ikigai</p>
+        </div>
+
+        <div class="page-content">
+            <!-- Message si pas de données -->
+            <div class="no-data-message" id="noDataMessage" style="display: none;">
+                <div class="card" style="text-align: center; padding: 40px;">
+                    <h3>🔍 Aucune donnée pour les recommandations</h3>
+                    <p>Complétez d'abord votre formulaire Ikigai pour recevoir des recommandations personnalisées.</p>
+                    <a href="formulaire.html" class="btn btn-primary btn-large">📝 Aller au formulaire</a>
+                </div>
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="recommendations-content" id="recommendationsContent">
+                <!-- Filtres et options -->
+                <div class="filters-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🔍</span>
+                            <div>
+                                <h3 class="card-title">Filtres de Recommandations</h3>
+                                <p class="card-subtitle">Personnalisez vos résultats</p>
+                            </div>
+                        </div>
+                        
+                        <div class="filters-content">
+                            <div class="filter-group">
+                                <label>Focus principal :</label>
+                                <select id="focusFilter" class="filter-select" onchange="updateRecommendations()">
+                                    <option value="all">Tous les aspects</option>
+                                    <option value="passion">Priorité aux passions</option>
+                                    <option value="talent">Priorité aux talents</option>
+                                    <option value="world">Impact social</option>
+                                    <option value="money">Potentiel économique</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>Type de changement :</label>
+                                <select id="changeFilter" class="filter-select" onchange="updateRecommendations()">
+                                    <option value="all">Toutes les options</option>
+                                    <option value="career">Changement de carrière</option>
+                                    <option value="skill">Développement de compétences</option>
+                                    <option value="side">Projet parallèle</option>
+                                    <option value="startup">Création d'entreprise</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>Horizon temporel :</label>
+                                <select id="timeFilter" class="filter-select" onchange="updateRecommendations()">
+                                    <option value="all">Tous les horizons</option>
+                                    <option value="immediate">Immédiat (0-6 mois)</option>
+                                    <option value="short">Court terme (6-18 mois)</option>
+                                    <option value="medium">Moyen terme (1-3 ans)</option>
+                                    <option value="long">Long terme (3+ ans)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Métiers recommandés -->
+                <div class="careers-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">💼</span>
+                            <div>
+                                <h3 class="card-title">Métiers Recommandés</h3>
+                                <p class="card-subtitle">Opportunités professionnelles alignées</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="generateCareerReport()">📊 Rapport détaillé</button>
+                        </div>
+                        
+                        <div class="careers-grid" id="careersGrid">
+                            <!-- Career cards will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formations recommandées -->
+                <div class="formations-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🎓</span>
+                            <div>
+                                <h3 class="card-title">Formations Suggérées</h3>
+                                <p class="card-subtitle">Développez vos compétences clés</p>
+                            </div>
+                            <button class="btn btn-info" onclick="findTrainingProviders()">🔍 Trouver des organismes</button>
+                        </div>
+                        
+                        <div class="formations-grid" id="formationsGrid">
+                            <!-- Formation cards will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projets pilotes -->
+                <div class="projects-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🚀</span>
+                            <div>
+                                <h3 class="card-title">Projets Pilotes</h3>
+                                <p class="card-subtitle">Testez vos idées sans risque</p>
+                            </div>
+                            <button class="btn btn-success" onclick="createProjectPlan()">📋 Plan d'action</button>
+                        </div>
+                        
+                        <div class="projects-grid" id="projectsGrid">
+                            <!-- Project cards will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opportunités de revenus -->
+                <div class="revenue-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">💰</span>
+                            <div>
+                                <h3 class="card-title">Opportunités de Revenus</h3>
+                                <p class="card-subtitle">Monétisez vos talents</p>
+                            </div>
+                            <button class="btn btn-warning" onclick="calculateRevenuePotential()">💎 Potentiel de revenus</button>
+                        </div>
+                        
+                        <div class="revenue-grid" id="revenueGrid">
+                            <!-- Revenue opportunity cards will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan d'action personnalisé -->
+                <div class="action-plan-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">📅</span>
+                            <div>
+                                <h3 class="card-title">Votre Plan d'Action Personnalisé</h3>
+                                <p class="card-subtitle">Étapes concrètes pour atteindre votre Ikigai</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="exportActionPlan()">📤 Exporter le plan</button>
+                        </div>
+                        
+                        <div class="timeline" id="actionTimeline">
+                            <!-- Timeline will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ressources complémentaires -->
+                <div class="resources-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">📚</span>
+                            <div>
+                                <h3 class="card-title">Ressources Complémentaires</h3>
+                                <p class="card-subtitle">Pour aller plus loin</p>
+                            </div>
+                        </div>
+                        
+                        <div class="resources-tabs">
+                            <button class="tab-btn active" onclick="showResourceTab('books')">📖 Livres</button>
+                            <button class="tab-btn" onclick="showResourceTab('podcasts')">🎧 Podcasts</button>
+                            <button class="tab-btn" onclick="showResourceTab('communities')">👥 Communautés</button>
+                            <button class="tab-btn" onclick="showResourceTab('mentors')">🧑‍🏫 Mentors</button>
+                        </div>
+                        
+                        <div class="resources-content" id="resourcesContent">
+                            <!-- Resources content will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="quick-actions-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">⚡</span>
+                            <div>
+                                <h3 class="card-title">Actions Rapides</h3>
+                                <p class="card-subtitle">Lancez-vous dès maintenant</p>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-actions-grid">
+                            <button class="action-card" onclick="startNetworking()">
+                                <div class="action-icon">🤝</div>
+                                <div class="action-title">Commencer le networking</div>
+                                <div class="action-desc">Connectez-vous avec des professionnels de votre domaine</div>
+                            </button>
+                            
+                            <button class="action-card" onclick="createLinkedInProfile()">
+                                <div class="action-icon">💼</div>
+                                <div class="action-title">Optimiser LinkedIn</div>
+                                <div class="action-desc">Mettez à jour votre profil avec vos découvertes</div>
+                            </button>
+                            
+                            <button class="action-card" onclick="findMentor()">
+                                <div class="action-icon">🧑‍🏫</div>
+                                <div class="action-title">Trouver un mentor</div>
+                                <div class="action-desc">Identifiez quelqu'un qui peut vous guider</div>
+                            </button>
+                            
+                            <button class="action-card" onclick="startSideProject()">
+                                <div class="action-icon">🚀</div>
+                                <div class="action-title">Projet parallèle</div>
+                                <div class="action-desc">Lancez un petit projet pour tester vos idées</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="careerDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="careerModalTitle">Détails du Métier</h3>
+                <button class="modal-close" onclick="closeCareerModal()">×</button>
+            </div>
+            <div class="modal-body" id="careerModalContent">
+                <!-- Career details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="actionPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 Plan d'Action Détaillé</h3>
+                <button class="modal-close" onclick="closeActionPlanModal()">×</button>
+            </div>
+            <div class="modal-body" id="actionPlanContent">
+                <!-- Action plan details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

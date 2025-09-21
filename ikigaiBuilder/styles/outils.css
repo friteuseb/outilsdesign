@@ -1,0 +1,560 @@
+/* Styles spécifiques à la page des outils */
+
+/* Grilles d'outils */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Cartes d'outils */
+.tool-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-card:hover {
+    border-color: #667eea;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.tool-card.advanced {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.tool-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #667eea;
+}
+
+.tool-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.tool-desc {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.tool-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.tool-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Configuration IA */
+.config-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.config-section {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.config-section h4 {
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.config-desc {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* Statut de configuration */
+.config-status {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.status-indicator {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-indicator.demo {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-indicator.configured {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-indicator.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Clés API */
+.api-keys {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.api-key-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.api-key-input label {
+    font-weight: 600;
+    color: #333;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transition: transform 0.2s ease;
+}
+
+.btn-small:hover {
+    transform: translateY(-1px);
+}
+
+.key-status {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Options de configuration */
+.config-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.config-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.config-option label {
+    min-width: 150px;
+    font-weight: 600;
+    color: #333;
+}
+
+.config-option select,
+.config-option input[type="range"] {
+    flex: 1;
+}
+
+.config-option select {
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.config-option input[type="range"] {
+    margin: 0 10px;
+}
+
+/* Gestion des données */
+.data-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.data-summary {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.data-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.data-stat:last-child {
+    border-bottom: none;
+}
+
+.data-label {
+    color: #333;
+    font-weight: 600;
+}
+
+.data-value {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.data-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Préférences */
+.preferences-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.pref-group {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.pref-group h4 {
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pref-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.pref-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.pref-option label {
+    min-width: 150px;
+    font-weight: 600;
+    color: #333;
+}
+
+.pref-option select {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.pref-option input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Support et aide */
+.support-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.support-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.support-link {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    padding: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.support-link:hover {
+    border-color: #667eea;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.support-icon {
+    font-size: 2.5rem;
+    min-width: 60px;
+}
+
+.support-text h4 {
+    color: #333;
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+}
+
+.support-text p {
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Informations de l'app */
+.app-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.app-info h4 {
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+}
+
+.info-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.info-value {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px 30px;
+    border-bottom: 2px solid #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.modal-close:hover {
+    background: #f8f9fa;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .config-option,
+    .pref-option {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .config-option label,
+    .pref-option label {
+        min-width: auto;
+    }
+    
+    .data-actions {
+        flex-direction: column;
+    }
+    
+    .support-links {
+        grid-template-columns: 1fr;
+    }
+    
+    .support-link {
+        padding: 15px;
+    }
+    
+    .support-icon {
+        font-size: 2rem;
+        min-width: 50px;
+    }
+    
+    .input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
+
+/* États de chargement */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #667eea;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}

@@ -1,0 +1,63 @@
+# Clés API sensibles
+.env
+.env.local
+.env.production
+.env.staging
+
+# Données utilisateur
+user-data/
+*.log
+
+# Cache et fichiers temporaires
+.cache/
+temp/
+*.tmp
+*.swp
+*.swo
+
+# Dépendances
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build et distribution
+dist/
+build/
+*.min.js
+*.min.css
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+*.lnk
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Données de test
+test-data/
+mock-data/
+
+# Screenshots et captures
+screenshots/
+captures/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Fichiers de sauvegarde
+*~
+*.bak
+*.backup

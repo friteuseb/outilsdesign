@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Ikigai Builder IA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f8f9fa;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .test-section h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-result {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success { background: linear-gradient(135deg, #28a745 0%, #81c784 100%); }
+        .btn-danger { background: linear-gradient(135deg, #dc3545 0%, #ef5350 100%); }
+    </style>
+</head>
+<body>
+    <h1>🧪 Tests - Ikigai Builder IA</h1>
+
+    <div class="test-section">
+        <h3>🔧 Tests de Fonctionnalités</h3>
+
+        <div id="testResults"></div>
+
+        <button class="btn" onclick="runAllTests()">🚀 Lancer tous les tests</button>
+        <button class="btn btn-success" onclick="testCoachAI()">🤖 Tester Coach IA</button>
+        <button class="btn btn-success" onclick="testBehavioralAnalysis()">📊 Tester Analyse</button>
+        <button class="btn" onclick="clearTestResults()">🗑️ Effacer résultats</button>
+    </div>
+
+    <div class="test-section">
+        <h3>⚙️ Configuration Système</h3>
+        <div id="systemInfo"></div>
+        <button class="btn" onclick="showSystemInfo()">📊 Info système</button>
+    </div>
+
+    <div class="test-section">
+        <h3>🎯 Tests de Performance</h3>
+        <div id="performanceResults"></div>
+        <button class="btn" onclick="runPerformanceTests()">⚡ Tests performance</button>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="demo-api.js"></script>
+    <script src="ai-coach.js"></script>
+    <script>
+        let testResults = [];
+
+        function addTestResult(testName, success, message) {
+            testResults.push({ testName, success, message, timestamp: new Date() });
+            displayTestResults();
+        }
+
+        function displayTestResults() {
+            const container = document.getElementById('testResults');
+            container.innerHTML = testResults.map(result => `
+                <div class="test-result ${result.success ? 'success' : 'error'}">
+                    <strong>${result.testName}:</strong> ${result.message}
+                    <small>(${result.timestamp.toLocaleTimeString()})</small>
+                </div>
+            `).join('');
+        }
+
+        function clearTestResults() {
+            testResults = [];
+            document.getElementById('testResults').innerHTML = '';
+        }
+
+        async function runAllTests() {
+            clearTestResults();
+
+            // Test configuration
+            addTestResult('Configuration', validateConfig(), 'Configuration système validée');
+
+            // Test API démo
+            try {
+                const demoResponse = await demoAPI.callOpenAI('Test prompt', 'Test message');
+                addTestResult('API Démo', demoResponse.choices && demoResponse.choices.length > 0, 'API de démonstration fonctionnelle');
+            } catch (error) {
+                addTestResult('API Démo', false, `Erreur API démo: ${error.message}`);
+            }
+
+            // Test coach IA
+            try {
+                const coach = new AICoach();
+                const testData = { passions: ['Test'], talents: ['Test'], problems: ['Test'], skills: ['Test'] };
+                await coach.startConversation(testData);
+                addTestResult('Coach IA', true, 'Coach IA initialisé avec succès');
+            } catch (error) {
+                addTestResult('Coach IA', false, `Erreur coach IA: ${error.message}`);
+            }
+
+            // Test analyse comportementale
+            try {
+                const coach = new AICoach();
+                const analysis = await coach.analyzeBehavioralPatterns();
+                addTestResult('Analyse Comportementale', typeof analysis === 'object', 'Analyse comportementale fonctionnelle');
+            } catch (error) {
+                addTestResult('Analyse Comportementale', false, `Erreur analyse: ${error.message}`);
+            }
+
+            // Test base de données carrières
+            addTestResult('Base Carrières', careerDatabase && careerDatabase.length > 0, `${careerDatabase.length} métiers dans la base de données`);
+
+            // Test interface utilisateur
+            const requiredElements = ['ikigaiBuilder.html'];
+            let uiTests = 0;
+            requiredElements.forEach(element => {
+                if (document.querySelector(`[src*="${element}"]`) || document.querySelector(`[href*="${element}"]`)) {
+                    uiTests++;
+                }
+            });
+            addTestResult('Interface', uiTests > 0, 'Éléments d\'interface présents');
+        }
+
+        async function testCoachAI() {
+            clearTestResults();
+
+            try {
+                const coach = new AICoach();
+                const testData = {
+                    passions: ['Créativité', 'Aider les autres'],
+                    talents: ['Communication', 'Empathie'],
+                    problems: ['Stress professionnel', 'Manque de sens'],
+                    skills: ['Coaching', 'Écriture']
+                };
+
+                addTestResult('Initialisation Coach', true, 'Données de test préparées');
+
+                const firstMessage = await coach.startConversation(testData);
+                addTestResult('Premier Message', firstMessage && firstMessage.length > 0, `Message reçu: ${firstMessage.substring(0, 50)}...`);
+
+                const response = await coach.sendMessage('Je me sens perdu dans ma carrière');
+                addTestResult('Réponse IA', response && response.length > 0, `Réponse reçue: ${response.substring(0, 50)}...`);
+
+                const summary = coach.getConversationSummary();
+                addTestResult('Résumé Conversation', summary.totalMessages > 0, `${summary.totalMessages} messages, progression: ${summary.progressIndicators.percentage}%`);
+
+            } catch (error) {
+                addTestResult('Test Coach IA', false, `Erreur: ${error.message}`);
+            }
+        }
+
+        async function testBehavioralAnalysis() {
+            clearTestResults();
+
+            try {
+                const coach = new AICoach();
+
+                // Simuler des messages de conversation
+                coach.conversationHistory = [
+                    { role: 'user', content: 'Je ne suis pas assez compétent pour ce métier', emotionalState: 'confused' },
+                    { role: 'user', content: 'J\'aime beaucoup créer des choses nouvelles', emotionalState: 'enthusiastic' },
+                    { role: 'user', content: 'Je remets toujours les tâches importantes à plus tard', emotionalState: 'frustrated' }
+                ];
+
+                const analysis = await coach.analyzeBehavioralPatterns();
+                addTestResult('Analyse Patterns', analysis.patterns && analysis.patterns.length >= 0, `${analysis.patterns.length} patterns détectés`);
+                addTestResult('Prédictions', analysis.predictions && analysis.predictions.length >= 0, `${analysis.predictions.length} prédictions générées`);
+
+                if (analysis.patterns.some(p => p.type === 'impostor_syndrome')) {
+                    addTestResult('Détection Imposteur', true, 'Syndrome de l\'imposteur correctement détecté');
+                }
+
+            } catch (error) {
+                addTestResult('Test Analyse Comportementale', false, `Erreur: ${error.message}`);
+            }
+        }
+
+        function showSystemInfo() {
+            const info = document.getElementById('systemInfo');
+            const systemData = {
+                'Navigateur': navigator.userAgent,
+                'Langage': navigator.language,
+                'Plateforme': navigator.platform,
+                'Cookies activés': navigator.cookieEnabled,
+                'JavaScript activé': true,
+                'LocalStorage': typeof Storage !== 'undefined',
+                'Configuration chargée': CONFIG ? 'Oui' : 'Non',
+                'Mode IA': CONFIG?.API?.OPENAI_KEY ? 'Complet' : 'Démo',
+                'Mémoire disponible': 'N/A'
+            };
+
+            info.innerHTML = Object.entries(systemData).map(([key, value]) => `
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee;">
+                    <strong>${key}:</strong>
+                    <span>${value}</span>
+                </div>
+            `).join('');
+        }
+
+        async function runPerformanceTests() {
+            const results = document.getElementById('performanceResults');
+            results.innerHTML = '<div class="test-result warning">⏳ Tests de performance en cours...</div>';
+
+            const startTime = performance.now();
+
+            // Test chargement coach IA
+            const coachStart = performance.now();
+            const coach = new AICoach();
+            const coachTime = performance.now() - coachStart;
+
+            // Test analyse comportementale
+            const analysisStart = performance.now();
+            const analysis = await coach.analyzeBehavioralPatterns();
+            const analysisTime = performance.now() - analysisStart;
+
+            // Test recherche carrière
+            const careerStart = performance.now();
+            const matches = findCareerMatches();
+            const careerTime = performance.now() - careerStart;
+
+            const totalTime = performance.now() - startTime;
+
+            results.innerHTML = `
+                <div class="test-result success">⚡ Performance globale: ${totalTime.toFixed(2)}ms</div>
+                <div class="test-result success">🤖 Chargement Coach IA: ${coachTime.toFixed(2)}ms</div>
+                <div class="test-result success">📊 Analyse comportementale: ${analysisTime.toFixed(2)}ms</div>
+                <div class="test-result success">🎯 Recherche carrières: ${careerTime.toFixed(2)}ms</div>
+                <div class="test-result ${totalTime < 1000 ? 'success' : 'warning'}">
+                    📈 Évaluation: ${totalTime < 500 ? 'Excellente' : totalTime < 1000 ? 'Bonne' : 'À optimiser'}
+                </div>
+            `;
+        }
+
+        // Tests automatiques au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            showSystemInfo();
+            addTestResult('Chargement Page', true, 'Page de test chargée avec succès');
+            addTestResult('Scripts Chargés', typeof AICoach !== 'undefined', 'Scripts IA chargés');
+        });
+    </script>
+</body>
+</html>

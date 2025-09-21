@@ -1,0 +1,66 @@
+{
+  "name": "ikigai-builder",
+  "version": "2.0.0",
+  "description": "Outil IA avancé de découverte d'Ikigai avec coach conversationnel et analyse comportementale",
+  "main": "ikigaiBuilder.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000 --bind 0.0.0.0",
+    "build": "echo 'Build process for production deployment'",
+    "test": "echo 'Running tests...' && npm run test:unit",
+    "test:unit": "echo 'Unit tests would run here'",
+    "lint": "echo 'Linting code...'",
+    "format": "echo 'Formatting code...'"
+  },
+  "keywords": [
+    "ikigai",
+    "coaching",
+    "ai",
+    "career",
+    "personal-development",
+    "psychology",
+    "self-discovery"
+  ],
+  "author": "Ikigai Builder Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ikigai-builder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/ikigai-builder/issues"
+  },
+  "homepage": "https://github.com/yourusername/ikigai-builder#readme",
+  "engines": {
+    "node": ">=14.0.0",
+    "python": ">=3.6.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "config": {
+    "port": 8000,
+    "host": "localhost"
+  },
+  "ikigai": {
+    "version": "2.0.0",
+    "features": [
+      "ai-coach",
+      "behavioral-analysis",
+      "career-matching",
+      "adaptive-pathway",
+      "psychological-profiling"
+    ],
+    "ai-models": [
+      "openai-gpt-4",
+      "anthropic-claude",
+      "google-ai"
+    ],
+    "languages": [
+      "fr",
+      "en"
+    ]
+  }
+}

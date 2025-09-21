@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach IA - Assistant Personnel Ikigai</title>
+
+    <!-- Google Analytics 4 -->
+    <script src="../analytics.js"></script>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/coach.css">
+    <script src="js/navigation.js" defer></script>
+    <script src="js/coach.js" defer></script>
+    <script src="config.js"></script>
+    <script src="ai-coach.js"></script>
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🧠 Ikigai Builder</a>
+            
+            <button class="menu-toggle">☰</button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="formulaire.html" class="nav-link">
+                        <span class="nav-icon">📝</span>
+                        Mon Ikigai
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="coach.html" class="nav-link active">
+                        <span class="nav-icon">🤖</span>
+                        Coach IA
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyse.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Analyse
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recommandations.html" class="nav-link">
+                        <span class="nav-icon">🎯</span>
+                        Recommandations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="outils.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Outils
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Coach IA -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1>🤖 Coach IA Personnel</h1>
+            <p>Votre assistant intelligent pour découvrir votre Ikigai</p>
+        </div>
+
+        <div class="page-content">
+            <!-- Configuration du coach -->
+            <div class="coach-config" id="coachConfig">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">⚙️</span>
+                        <div>
+                            <h3 class="card-title">Configuration du Coach</h3>
+                            <p class="card-subtitle">Personnalisez votre expérience</p>
+                        </div>
+                    </div>
+                    
+                    <div class="config-options">
+                        <div class="config-group">
+                            <label>Mode d'accompagnement :</label>
+                            <select id="coachMode" class="config-select">
+                                <option value="discovery">🔍 Découverte (Questions exploratoires)</option>
+                                <option value="analysis">📊 Analyse (Feedback et insights)</option>
+                                <option value="guidance">🧭 Guidance (Conseils pratiques)</option>
+                                <option value="motivation">💪 Motivation (Encouragement)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="config-group">
+                            <label>Niveau de profondeur :</label>
+                            <select id="depthLevel" class="config-select">
+                                <option value="surface">⭐ Léger (Questions simples)</option>
+                                <option value="medium" selected>⭐⭐ Modéré (Questions approfondies)</option>
+                                <option value="deep">⭐⭐⭐ Profond (Analyse psychologique)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="config-group">
+                            <label>Style de communication :</label>
+                            <select id="communicationStyle" class="config-select">
+                                <option value="friendly" selected>😊 Amical et bienveillant</option>
+                                <option value="professional">🎯 Professionnel et direct</option>
+                                <option value="socratic">🤔 Socratique (Questions profondes)</option>
+                                <option value="encouraging">🌟 Encourageant et motivant</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="config-actions">
+                        <button class="btn btn-primary" onclick="startCoachSession()">🚀 Commencer la session</button>
+                        <button class="btn btn-secondary" onclick="resetCoach()">🔄 Réinitialiser</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interface de chat -->
+            <div class="chat-container" id="chatContainer" style="display: none;">
+                <div class="chat-header">
+                    <div class="coach-avatar">🤖</div>
+                    <div class="coach-info">
+                        <h4>Coach IA Ikigai</h4>
+                        <span class="coach-status" id="coachStatus">En ligne</span>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="btn-icon" onclick="toggleCoachConfig()" title="Configuration">⚙️</button>
+                        <button class="btn-icon" onclick="exportConversation()" title="Exporter">💾</button>
+                        <button class="btn-icon" onclick="clearConversation()" title="Effacer">🗑️</button>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will appear here -->
+                </div>
+                
+                <div class="chat-input-container">
+                    <div class="quick-actions" id="quickActions">
+                        <!-- Quick action buttons will appear here -->
+                    </div>
+                    
+                    <div class="chat-input-wrapper">
+                        <textarea id="chatInput" class="chat-input" placeholder="Tapez votre message..." rows="1"></textarea>
+                        <button class="send-button" id="sendButton" onclick="sendMessage()">
+                            <span class="send-icon">📤</span>
+                        </button>
+                    </div>
+                    
+                    <div class="input-status" id="inputStatus">
+                        <span class="typing-indicator" id="typingIndicator" style="display: none;">
+                            Le coach IA réfléchit... <span class="dots">...</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggestions de démarrage -->
+            <div class="starter-suggestions" id="starterSuggestions" style="display: none;">
+                <h4>💡 Suggestions pour commencer :</h4>
+                <div class="suggestions-grid">
+                    <button class="suggestion-btn" onclick="sendSuggestedMessage('Je ne sais pas par où commencer pour découvrir mon Ikigai')">
+                        🤔 Je ne sais pas par où commencer
+                    </button>
+                    <button class="suggestion-btn" onclick="sendSuggestedMessage('Je ressens le besoin de changer de carrière mais j\\'ai peur')">
+                        🔄 Je veux changer de carrière
+                    </button>
+                    <button class="suggestion-btn" onclick="sendSuggestedMessage('Aide-moi à identifier mes passions profondes')">
+                        ❤️ Découvrir mes passions
+                    </button>
+                    <button class="suggestion-btn" onclick="sendSuggestedMessage('Comment identifier mes vrais talents ?')">
+                        🎯 Identifier mes talents
+                    </button>
+                    <button class="suggestion-btn" onclick="sendSuggestedMessage('Quel impact puis-je avoir sur le monde ?')">
+                        🌍 Mon impact sur le monde
+                    </button>
+                    <button class="suggestion-btn" onclick="sendSuggestedMessage('Comment monétiser mes compétences ?')">
+                        💰 Monétiser mes compétences
+                    </button>
+                </div>
+            </div>
+
+            <!-- Historique des sessions -->
+            <div class="session-history" id="sessionHistory" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📚</span>
+                        <div>
+                            <h3 class="card-title">Historique des Sessions</h3>
+                            <p class="card-subtitle">Retrouvez vos conversations précédentes</p>
+                        </div>
+                    </div>
+                    <div class="history-list" id="historyList">
+                        <!-- History items will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicateur de frappe -->
+    <style>
+        @keyframes dots {
+            0%, 20% { color: transparent; }
+            40% { color: #667eea; }
+            100% { color: transparent; }
+        }
+        
+        .dots span:nth-child(1) { animation: dots 1.4s infinite; animation-delay: 0s; }
+        .dots span:nth-child(2) { animation: dots 1.4s infinite; animation-delay: 0.2s; }
+        .dots span:nth-child(3) { animation: dots 1.4s infinite; animation-delay: 0.4s; }
+    </style>
+</body>
+</html>

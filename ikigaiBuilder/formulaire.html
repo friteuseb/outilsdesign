@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Ikigai - Formulaire de Découverte</title>
+
+    <!-- Google Analytics 4 -->
+    <script src="../analytics.js"></script>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/formulaire.css">
+    <script src="js/navigation.js" defer></script>
+    <script src="js/formulaire.js" defer></script>
+    <script src="config.js"></script>
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🧠 Ikigai Builder</a>
+            
+            <button class="menu-toggle">☰</button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="formulaire.html" class="nav-link active">
+                        <span class="nav-icon">📝</span>
+                        Mon Ikigai
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="coach.html" class="nav-link">
+                        <span class="nav-icon">🤖</span>
+                        Coach IA
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyse.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Analyse
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recommandations.html" class="nav-link">
+                        <span class="nav-icon">🎯</span>
+                        Recommandations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="outils.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Outils
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page formulaire -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1>Découvrez votre Ikigai</h1>
+            <p>Explorez les 4 dimensions de votre raison d'être</p>
+        </div>
+
+        <div class="page-content">
+            <!-- Barre de progression -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="progress-dot active" id="dot1">❤️</div>
+                    <div class="progress-dot" id="dot2">🎯</div>
+                    <div class="progress-dot" id="dot3">🌍</div>
+                    <div class="progress-dot" id="dot4">💰</div>
+                </div>
+            </div>
+
+            <!-- Formulaire principal -->
+            <div class="formulaire-container">
+                <!-- Section 1: Ce que vous aimez (Passion) -->
+                <div class="section-card passion active">
+                    <div class="section-header">
+                        <div class="section-icon">❤️</div>
+                        <div>
+                            <div class="section-title">Ce que vous AIMEZ</div>
+                            <div class="section-subtitle">Vos passions et centres d'intérêt</div>
+                        </div>
+                        <button class="btn-guided" onclick="showGuidedQuestions('passions')" title="Questions guidées pour explorer vos passions">🧠</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quelles activités vous passionnent vraiment ?</label>
+                        <div class="tag-input" id="passionTags">
+                            <input type="text" class="tag-input-field" placeholder="Tapez et appuyez sur Entrée pour ajouter..." 
+                                   onkeypress="addTag(event, 'passionTags', 'passions')">
+                        </div>
+                        <small class="form-hint">Exemples : musique, sport, technologie, art, cuisine...</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Décrivez votre passion principale</label>
+                        <textarea id="passionDescription" placeholder="Qu'est-ce qui vous anime le plus ? Pourquoi cette passion est-elle importante pour vous ?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Section 2: Ce en quoi vous excellez (Mission) -->
+                <div class="section-card mission">
+                    <div class="section-header">
+                        <div class="section-icon">🎯</div>
+                        <div>
+                            <div class="section-title">Ce en quoi vous EXCELLEZ</div>
+                            <div class="section-subtitle">Vos talents et compétences naturelles</div>
+                        </div>
+                        <button class="btn-guided" onclick="showGuidedQuestions('talents')" title="Questions guidées pour identifier vos talents">🧠</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quels sont vos talents naturels ?</label>
+                        <div class="tag-input" id="talentTags">
+                            <input type="text" class="tag-input-field" placeholder="Tapez et appuyez sur Entrée pour ajouter..." 
+                                   onkeypress="addTag(event, 'talentTags', 'talents')">
+                        </div>
+                        <small class="form-hint">Exemples : communication, analyse, créativité, organisation...</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Qu'est-ce que les autres reconnaissent en vous ?</label>
+                        <textarea id="talentFeedback" placeholder="Quels compliments recevez-vous souvent ? Dans quoi les autres viennent-ils vous chercher ?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Section 3: Ce dont le monde a besoin (Profession) -->
+                <div class="section-card profession">
+                    <div class="section-header">
+                        <div class="section-icon">🌍</div>
+                        <div>
+                            <div class="section-title">Ce dont le monde a BESOIN</div>
+                            <div class="section-subtitle">Les problèmes que vous pouvez résoudre</div>
+                        </div>
+                        <button class="btn-guided" onclick="showGuidedQuestions('problems')" title="Questions guidées pour identifier les besoins mondiaux">🧠</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quels problèmes vous préoccupent ?</label>
+                        <div class="tag-input" id="problemTags">
+                            <input type="text" class="tag-input-field" placeholder="Tapez et appuyez sur Entrée pour ajouter..." 
+                                   onkeypress="addTag(event, 'problemTags', 'problems')">
+                        </div>
+                        <small class="form-hint">Exemples : environnement, éducation, santé, inégalités...</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Comment voulez-vous contribuer à améliorer le monde ?</label>
+                        <textarea id="worldContribution" placeholder="Quel impact positif souhaitez-vous avoir ? Quels changements voulez-vous voir ?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Section 4: Ce pour quoi vous pouvez être payé (Vocation) -->
+                <div class="section-card vocation">
+                    <div class="section-header">
+                        <div class="section-icon">💰</div>
+                        <div>
+                            <div class="section-title">Ce pour quoi vous pouvez être PAYÉ</div>
+                            <div class="section-subtitle">Vos compétences monétisables</div>
+                        </div>
+                        <button class="btn-guided" onclick="showGuidedQuestions('skills')" title="Questions guidées pour identifier vos compétences monétisables">🧠</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quelles compétences peuvent générer des revenus ?</label>
+                        <div class="tag-input" id="skillTags">
+                            <input type="text" class="tag-input-field" placeholder="Tapez et appuyez sur Entrée pour ajouter..." 
+                                   onkeypress="addTag(event, 'skillTags', 'skills')">
+                        </div>
+                        <small class="form-hint">Exemples : programmation, marketing, design, conseil...</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quelles opportunités économiques voyez-vous ?</label>
+                        <textarea id="economicOpportunities" placeholder="Comment pourriez-vous monétiser vos talents ? Quels marchés vous intéressent ?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Navigation entre sections -->
+                <div class="section-navigation">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="changeSection(-1)" style="display: none;">⬅️ Précédent</button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="changeSection(1)">Suivant ➡️</button>
+                    <button class="btn btn-success" id="analyzeBtn" onclick="analyzeIkigai()" style="display: none;">🔍 Analyser mon Ikigai</button>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="quick-actions">
+                    <button class="btn btn-warning" onclick="fillExampleData()">🧪 Données d'exemple</button>
+                    <button class="btn btn-info" onclick="saveProgress()">💾 Sauvegarder</button>
+                    <button class="btn btn-secondary" onclick="loadProgress()">📂 Charger</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour questions guidées -->
+    <div id="guidedQuestionsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Questions Guidées</h3>
+                <button class="modal-close" onclick="closeGuidedQuestions()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="question-tabs">
+                    <button class="tab-btn active" onclick="switchQuestionTab('socratic')">❓ Socratique</button>
+                    <button class="tab-btn" onclick="switchQuestionTab('analogies')">🎭 Analogies</button>
+                    <button class="tab-btn" onclick="switchQuestionTab('triggers')">🎯 Déclencheurs</button>
+                </div>
+                <div id="questionsContainer">
+                    <!-- Questions will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

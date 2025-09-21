@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outils - Export, Sauvegarde et Configuration</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/outils.css">
+    <script src="js/navigation.js" defer></script>
+    <script src="js/outils.js" defer></script>
+    <script src="config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🧠 Ikigai Builder</a>
+            
+            <button class="menu-toggle">☰</button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="formulaire.html" class="nav-link">
+                        <span class="nav-icon">📝</span>
+                        Mon Ikigai
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="coach.html" class="nav-link">
+                        <span class="nav-icon">🤖</span>
+                        Coach IA
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyse.html" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        Analyse
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recommandations.html" class="nav-link">
+                        <span class="nav-icon">🎯</span>
+                        Recommandations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="outils.html" class="nav-link active">
+                        <span class="nav-icon">⚙️</span>
+                        Outils
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page des outils -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1>⚙️ Outils et Configuration</h1>
+            <p>Export, sauvegarde, configuration et outils avancés</p>
+        </div>
+
+        <div class="page-content">
+            <!-- Export et Sauvegarde -->
+            <div class="export-section">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">💾</span>
+                        <div>
+                            <h3 class="card-title">Export et Sauvegarde</h3>
+                            <p class="card-subtitle">Sauvegardez et partagez vos découvertes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tools-grid">
+                        <div class="tool-card" onclick="generatePDF()">
+                            <div class="tool-icon">📄</div>
+                            <div class="tool-title">Générer PDF</div>
+                            <div class="tool-desc">Rapport complet avec analyse et visualisation</div>
+                            <div class="tool-status" id="pdfStatus">Prêt</div>
+                        </div>
+                        
+                        <div class="tool-card" onclick="exportJSON()">
+                            <div class="tool-icon">📤</div>
+                            <div class="tool-title">Exporter JSON</div>
+                            <div class="tool-desc">Format de données pour sauvegarde</div>
+                            <div class="tool-status">Prêt</div>
+                        </div>
+                        
+                        <div class="tool-card" onclick="importJSON()">
+                            <div class="tool-icon">📥</div>
+                            <div class="tool-title">Importer JSON</div>
+                            <div class="tool-desc">Restaurer vos données sauvegardées</div>
+                            <div class="tool-status">Prêt</div>
+                        </div>
+                        
+                        <div class="tool-card" onclick="shareResults()">
+                            <div class="tool-icon">🔗</div>
+                            <div class="tool-title">Partager</div>
+                            <div class="tool-desc">Lien de partage sécurisé</div>
+                            <div class="tool-status">Prêt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration IA -->
+            <div class="ai-config-section">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🤖</span>
+                        <div>
+                            <h3 class="card-title">Configuration IA</h3>
+                            <p class="card-subtitle">Paramètres des fonctionnalités intelligentes</p>
+                        </div>
+                        <div class="config-status" id="aiConfigStatus">
+                            <span class="status-indicator demo">Mode Démo</span>
+                        </div>
+                    </div>
+                    
+                    <div class="config-content">
+                        <div class="config-section">
+                            <h4>🔑 Clés API</h4>
+                            <p class="config-desc">Configurez vos clés API pour activer les fonctionnalités avancées</p>
+                            
+                            <div class="api-keys">
+                                <div class="api-key-input">
+                                    <label>OpenAI (GPT-4) :</label>
+                                    <div class="input-group">
+                                        <input type="password" id="openaiKey" placeholder="sk-..." onchange="updateAPIKey('openai')">
+                                        <button class="btn-small" onclick="testAPIKey('openai')">Tester</button>
+                                    </div>
+                                    <div class="key-status" id="openaiStatus">Non configuré</div>
+                                </div>
+                                
+                                <div class="api-key-input">
+                                    <label>Anthropic (Claude) :</label>
+                                    <div class="input-group">
+                                        <input type="password" id="anthropicKey" placeholder="sk-ant-..." onchange="updateAPIKey('anthropic')">
+                                        <button class="btn-small" onclick="testAPIKey('anthropic')">Tester</button>
+                                    </div>
+                                    <div class="key-status" id="anthropicStatus">Non configuré</div>
+                                </div>
+                                
+                                <div class="api-key-input">
+                                    <label>Google AI :</label>
+                                    <div class="input-group">
+                                        <input type="password" id="googleKey" placeholder="AIza..." onchange="updateAPIKey('google')">
+                                        <button class="btn-small" onclick="testAPIKey('google')">Tester</button>
+                                    </div>
+                                    <div class="key-status" id="googleStatus">Non configuré</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="config-section">
+                            <h4>🎛️ Paramètres IA</h4>
+                            <div class="config-options">
+                                <div class="config-option">
+                                    <label>Modèle préféré :</label>
+                                    <select id="preferredModel" onchange="updateAIConfig()">
+                                        <option value="auto">Automatique</option>
+                                        <option value="gpt-4">GPT-4 (OpenAI)</option>
+                                        <option value="claude">Claude (Anthropic)</option>
+                                        <option value="gemini">Gemini (Google)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="config-option">
+                                    <label>Température (créativité) :</label>
+                                    <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" onchange="updateAIConfig()">
+                                    <span id="temperatureValue">0.7</span>
+                                </div>
+                                
+                                <div class="config-option">
+                                    <label>Tokens maximum :</label>
+                                    <select id="maxTokens" onchange="updateAIConfig()">
+                                        <option value="500">500 (Rapide)</option>
+                                        <option value="1000" selected>1000 (Équilibré)</option>
+                                        <option value="2000">2000 (Détaillé)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outils d'analyse avancés -->
+            <div class="advanced-tools-section">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🚀</span>
+                        <div>
+                            <h3 class="card-title">Outils d'Analyse Avancés</h3>
+                            <p class="card-subtitle">Fonctionnalités spécialisées</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tools-grid">
+                        <div class="tool-card advanced" onclick="startPsychologicalAssessment()">
+                            <div class="tool-icon">🧠</div>
+                            <div class="tool-title">Évaluation Psychologique</div>
+                            <div class="tool-desc">Test de personnalité Big Five approfondi</div>
+                            <div class="tool-badge">IA</div>
+                        </div>
+                        
+                        <div class="tool-card advanced" onclick="runBehavioralAnalysis()">
+                            <div class="tool-icon">📊</div>
+                            <div class="tool-title">Analyse Comportementale</div>
+                            <div class="tool-desc">Patterns et biais cognitifs détectés par IA</div>
+                            <div class="tool-badge">IA</div>
+                        </div>
+                        
+                        <div class="tool-card advanced" onclick="createAdaptivePathway()">
+                            <div class="tool-icon">🧭</div>
+                            <div class="tool-title">Parcours Adaptatif</div>
+                            <div class="tool-desc">Plan personnalisé qui évolue avec vous</div>
+                            <div class="tool-badge">IA</div>
+                        </div>
+                        
+                        <div class="tool-card advanced" onclick="predictSuccessProbability()">
+                            <div class="tool-icon">🔮</div>
+                            <div class="tool-title">Prédiction de Succès</div>
+                            <div class="tool-desc">Algorithmes prédictifs basés sur les données</div>
+                            <div class="tool-badge">IA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des données -->
+            <div class="data-management-section">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🗄️</span>
+                        <div>
+                            <h3 class="card-title">Gestion des Données</h3>
+                            <p class="card-subtitle">Contrôlez vos informations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="data-overview">
+                        <div class="data-summary" id="dataSummary">
+                            <!-- Data summary will be loaded here -->
+                        </div>
+                        
+                        <div class="data-actions">
+                            <button class="btn btn-info" onclick="showDataDetails()">📊 Voir détails</button>
+                            <button class="btn btn-warning" onclick="clearAllData()">🗑️ Tout effacer</button>
+                            <button class="btn btn-secondary" onclick="downloadBackup()">💾 Sauvegarde complète</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Préférences utilisateur -->
+            <div class="preferences-section">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">👤</span>
+                        <div>
+                            <h3 class="card-title">Préférences</h3>
+                            <p class="card-subtitle">Personnalisez votre expérience</p>
+                        </div>
+                    </div>
+                    
+                    <div class="preferences-content">
+                        <div class="pref-group">
+                            <h4>🎨 Interface</h4>
+                            <div class="pref-options">
+                                <div class="pref-option">
+                                    <label>Thème :</label>
+                                    <select id="theme" onchange="updateTheme()">
+                                        <option value="auto">Automatique</option>
+                                        <option value="light">Clair</option>
+                                        <option value="dark">Sombre</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="pref-option">
+                                    <label>Animations :</label>
+                                    <input type="checkbox" id="animations" checked onchange="updatePreferences()">
+                                    <span>Activer les animations</span>
+                                </div>
+                                
+                                <div class="pref-option">
+                                    <label>Notifications :</label>
+                                    <input type="checkbox" id="notifications" checked onchange="updatePreferences()">
+                                    <span>Afficher les notifications</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pref-group">
+                            <h4>🔔 Alertes</h4>
+                            <div class="pref-options">
+                                <div class="pref-option">
+                                    <label>Rappels de progression :</label>
+                                    <select id="progressReminders" onchange="updatePreferences()">
+                                        <option value="never">Jamais</option>
+                                        <option value="weekly" selected>Hebdomadaire</option>
+                                        <option value="monthly">Mensuel</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="pref-option">
+                                    <label>Conseils du jour :</label>
+                                    <input type="checkbox" id="dailyTips" checked onchange="updatePreferences()">
+                                    <span>Recevoir des conseils quotidiens</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support et aide -->
+            <div class="support-section">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">💬</span>
+                        <div>
+                            <h3 class="card-title">Support et Aide</h3>
+                            <p class="card-subtitle">Assistance et ressources</p>
+                        </div>
+                    </div>
+                    
+                    <div class="support-content">
+                        <div class="support-links">
+                            <a href="#" class="support-link" onclick="showUserGuide()">
+                                <div class="support-icon">📖</div>
+                                <div class="support-text">
+                                    <h4>Guide d'utilisation</h4>
+                                    <p>Apprenez à utiliser toutes les fonctionnalités</p>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="support-link" onclick="showFAQ()">
+                                <div class="support-icon">❓</div>
+                                <div class="support-text">
+                                    <h4>FAQ</h4>
+                                    <p>Réponses aux questions fréquentes</p>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="support-link" onclick="reportBug()">
+                                <div class="support-icon">🐛</div>
+                                <div class="support-text">
+                                    <h4>Signaler un problème</h4>
+                                    <p>Aidez-nous à améliorer l'application</p>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="support-link" onclick="sendFeedback()">
+                                <div class="support-icon">💌</div>
+                                <div class="support-text">
+                                    <h4>Envoyer un feedback</h4>
+                                    <p>Partagez vos suggestions d'amélioration</p>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="app-info">
+                            <h4>ℹ️ Informations</h4>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Version :</span>
+                                    <span class="info-value">2.0.0</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Dernière mise à jour :</span>
+                                    <span class="info-value">Septembre 2024</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Mode :</span>
+                                    <span class="info-value" id="currentMode">Démo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="configModalTitle">Configuration</h3>
+                <button class="modal-close" onclick="closeConfigModal()">×</button>
+            </div>
+            <div class="modal-body" id="configModalContent">
+                <!-- Config content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFileInput" style="display: none" accept=".json" onchange="handleFileImport(event)">
+</body>
+</html>

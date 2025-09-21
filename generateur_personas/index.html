@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Fiches Personas</title>
+
+    <!-- Google Analytics 4 -->
+    <script src="../analytics.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            min-height: 80vh;
+        }
+
+        .form-section {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .preview-section {
+            padding: 40px;
+            background: white;
+            border-left: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            height: fit-content;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .section-title {
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            margin: 30px 0 20px 0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .persona-preview {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .persona-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+
+        .persona-name {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .persona-details {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #4a5568;
+        }
+
+        .detail-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f7fafc;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .saved-personas {
+            margin-top: 30px;
+        }
+
+        .saved-persona-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .saved-persona-info {
+            flex: 1;
+        }
+
+        .saved-persona-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .status-message {
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .keyword-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-section {
+                border-left: none;
+                border-top: 2px solid #e9ecef;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Générateur de Fiches Personas</h1>
+            <p>Créez, sauvegardez et exportez vos personas marketing</p>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-small" onclick="showPersonaCreation()" id="btnPersonaCreation">✏️ Création Personas</button>
+                <button class="btn btn-small btn-secondary" onclick="showPositioningMatrix()" id="btnPositioning">📊 Matrice Positionnement</button>
+            </div>
+        </div>
+
+        <!-- Page Création Personas -->
+        <div id="personaCreationPage" class="main-content">
+            <div class="form-section">
+                <div id="statusMessage"></div>
+                
+                <form id="personaForm">
+                    <div class="section-title">👤 Identité</div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nom/Prénom *</label>
+                            <input type="text" id="name" name="name" required placeholder="Ex: Marie Dubois">
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Âge *</label>
+                            <input type="number" id="age" name="age" required placeholder="Ex: 35" min="18" max="100">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location">Localisation</label>
+                            <input type="text" id="location" name="location" placeholder="Ex: Paris, Île-de-France">
+                        </div>
+                        <div class="form-group">
+                            <label for="profession">Profession</label>
+                            <input type="text" id="profession" name="profession" placeholder="Ex: Consultant marketing">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expertise">Niveau d'expertise</label>
+                        <select id="expertise" name="expertise">
+                            <option value="">Sélectionner...</option>
+                            <option value="Débutant">Débutant</option>
+                            <option value="Intermédiaire">Intermédiaire</option>
+                            <option value="Avancé">Avancé</option>
+                            <option value="Expert">Expert</option>
+                        </select>
+                    </div>
+
+                    <div class="section-title">🧠 Psychographie</div>
+                    
+                    <div class="form-group">
+                        <label for="motivations">Motivations principales</label>
+                        <textarea id="motivations" name="motivations" placeholder="Qu'est-ce qui le motive à acheter ? Quels sont ses objectifs ?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fears">Freins et peurs</label>
+                        <textarea id="fears" name="fears" placeholder="Qu'est-ce qui l'inquiète ? Quels sont ses freins à l'achat ?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="information_sources">Sources d'information</label>
+                        <textarea id="information_sources" name="information_sources" placeholder="Où s'informe-t-il ? Blogs, forums, réseaux sociaux..."></textarea>
+                    </div>
+
+                    <div class="section-title">💰 Comportement d'achat</div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="budget">Budget moyen</label>
+                            <input type="text" id="budget" name="budget" placeholder="Ex: 500-1500€">
+                        </div>
+                        <div class="form-group">
+                            <label for="frequency">Fréquence d'achat</label>
+                            <select id="frequency" name="frequency">
+                                <option value="">Sélectionner...</option>
+                                <option value="Ponctuel">Ponctuel</option>
+                                <option value="Annuel">Annuel</option>
+                                <option value="Bi-annuel">Bi-annuel</option>
+                                <option value="Régulier">Régulier</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="decision_process">Processus de décision</label>
+                        <textarea id="decision_process" name="decision_process" placeholder="Comment prend-il ses décisions ? Qui influence ses choix ?"></textarea>
+                    </div>
+
+                    <div class="section-title">🔍 Mots-clés recherchés</div>
+                    
+                    <div class="form-group">
+                        <label for="informational_keywords">Mots-clés informationnels</label>
+                        <input type="text" id="informational_keywords" name="informational_keywords" placeholder="comment, pourquoi, guide, tutoriel... (séparés par des virgules)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="commercial_keywords">Mots-clés commerciaux</label>
+                        <input type="text" id="commercial_keywords" name="commercial_keywords" placeholder="meilleur, comparatif, avis, solution... (séparés par des virgules)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transactional_keywords">Mots-clés transactionnels</label>
+                        <input type="text" id="transactional_keywords" name="transactional_keywords" placeholder="acheter, prix, devis, abonnement... (séparés par des virgules)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notes supplémentaires</label>
+                        <textarea id="notes" name="notes" placeholder="Toute information complémentaire..."></textarea>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <button type="submit" class="btn">💾 Sauvegarder le Persona</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">🗑️ Effacer</button>
+                        <button type="button" class="btn btn-success" onclick="fillTestData()">🧪 Données de test</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <h3>📋 Aperçu du Persona</h3>
+                <div id="personaPreview" class="persona-preview">
+                    <div class="persona-avatar">👤</div>
+                    <div class="persona-name">Nouveau Persona</div>
+                    <div class="persona-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Remplissez le formulaire pour voir l'aperçu</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-success" onclick="generatePDF()">📄 Générer PDF</button>
+                    <button class="btn btn-secondary" onclick="exportAllData()">📊 Exporter données</button>
+                </div>
+
+                <div class="saved-personas">
+                    <h4>💾 Personas sauvegardés</h4>
+                    <div id="savedPersonasList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Matrice de Positionnement -->
+        <div id="positioningMatrixPage" class="main-content" style="display: none;">
+            <div style="padding: 30px;">
+                <h2>📊 Matrice de Positionnement - Valeur vs Volume</h2>
+                <p style="margin-bottom: 30px; color: #6c757d;">Positionnez vos personas selon leur valeur client et leur volume potentiel</p>
+                
+                <div style="display: flex; gap: 30px;">
+                    <!-- Panneau de contrôle -->
+                    <div style="width: 300px; background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                        <h3>Personas disponibles</h3>
+                        <div id="personaList" style="margin-bottom: 20px;">
+                            <!-- Liste des personas sera générée ici -->
+                        </div>
+                        
+                        <div style="border-top: 2px solid #dee2e6; padding-top: 15px; margin-top: 15px;">
+                            <h4>Positionner un persona</h4>
+                            <div class="form-group">
+                                <label for="personaSelect">Sélectionner un persona:</label>
+                                <select id="personaSelect" class="form-control">
+                                    <option value="">Choisir...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="valueScore">Score Valeur (1-10):</label>
+                                <input type="range" id="valueScore" min="1" max="10" value="5" class="form-control">
+                                <span id="valueDisplay">5</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="volumeScore">Score Volume (1-10):</label>
+                                <input type="range" id="volumeScore" min="1" max="10" value="5" class="form-control">
+                                <span id="volumeDisplay">5</span>
+                            </div>
+                            <button class="btn" onclick="positionPersona()">📍 Positionner</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Matrice -->
+                    <div style="flex: 1;">
+                        <div id="matrix" style="width: 500px; height: 500px; border: 2px solid #dee2e6; position: relative; background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%, transparent 75%, #f8f9fa 75%), linear-gradient(45deg, #f8f9fa 25%, transparent 25%, transparent 75%, #f8f9fa 75%); background-size: 20px 20px; background-position: 0 0, 10px 10px; border-radius: 8px;">
+                            <!-- Axes -->
+                            <div style="position: absolute; left: -30px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; text-orientation: mixed; font-weight: bold; color: #495057;">
+                                VALEUR CLIENT
+                            </div>
+                            <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-weight: bold; color: #495057;">
+                                VOLUME POTENTIEL
+                            </div>
+                            
+                            <!-- Quadrants labels -->
+                            <div style="position: absolute; top: 10px; right: 10px; background: rgba(40, 167, 69, 0.1); padding: 5px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: #28a745;">
+                                Champions
+                            </div>
+                            <div style="position: absolute; top: 10px; left: 10px; background: rgba(255, 193, 7, 0.1); padding: 5px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: #ffc107;">
+                                Pépites
+                            </div>
+                            <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(108, 117, 125, 0.1); padding: 5px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: #6c757d;">
+                                Masse
+                            </div>
+                            <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(220, 53, 69, 0.1); padding: 5px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: #dc3545;">
+                                Dilemme
+                            </div>
+                            
+                            <!-- Lignes de séparation -->
+                            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #dee2e6;"></div>
+                            <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #dee2e6;"></div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <button class="btn" onclick="exportMatrixImage()">📸 Exporter image</button>
+                            <button class="btn btn-secondary" onclick="exportMatrixData()">📊 Exporter données</button>
+                            <button class="btn btn-success" onclick="exportMatrixPDF()">📄 Exporter PDF</button>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>Légende des quadrants</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                                <div style="padding: 10px; background: rgba(40, 167, 69, 0.1); border-left: 4px solid #28a745; border-radius: 4px;">
+                                    <strong>Champions</strong><br>
+                                    <small>Haute valeur, gros volume - Priorité absolue</small>
+                                </div>
+                                <div style="padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 4px;">
+                                    <strong>Pépites</strong><br>
+                                    <small>Haute valeur, petit volume - Développer</small>
+                                </div>
+                                <div style="padding: 10px; background: rgba(108, 117, 125, 0.1); border-left: 4px solid #6c757d; border-radius: 4px;">
+                                    <strong>Masse</strong><br>
+                                    <small>Faible valeur, gros volume - Optimiser</small>
+                                </div>
+                                <div style="padding: 10px; background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545; border-radius: 4px;">
+                                    <strong>Dilemme</strong><br>
+                                    <small>Faible valeur, petit volume - Questionner</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de données SQLite en mémoire
+        let db = null;
+        
+        // Initialisation de la base de données
+        async function initDatabase() {
+            const SQL = await initSqlJs({
+                locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+            });
+            
+            // Vérifier si des données existent dans localStorage
+            const savedData = localStorage.getItem('personasDB');
+            if (savedData) {
+                const uint8Array = new Uint8Array(JSON.parse(savedData));
+                db = new SQL.Database(uint8Array);
+            } else {
+                db = new SQL.Database();
+                // Créer la table
+                db.run(`
+                    CREATE TABLE personas (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        age INTEGER,
+                        location TEXT,
+                        profession TEXT,
+                        expertise TEXT,
+                        motivations TEXT,
+                        fears TEXT,
+                        information_sources TEXT,
+                        budget TEXT,
+                        frequency TEXT,
+                        decision_process TEXT,
+                        informational_keywords TEXT,
+                        commercial_keywords TEXT,
+                        transactional_keywords TEXT,
+                        notes TEXT,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                `);
+                saveDatabase();
+            }
+            loadSavedPersonas();
+        }
+
+        // Sauvegarder la base dans localStorage
+        function saveDatabase() {
+            const data = db.export();
+            localStorage.setItem('personasDB', JSON.stringify(Array.from(data)));
+        }
+
+        // Afficher un message de statut
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // Mettre à jour l'aperçu en temps réel
+        function updatePreview() {
+            const formData = new FormData(document.getElementById('personaForm'));
+            const data = Object.fromEntries(formData);
+            
+            const preview = document.getElementById('personaPreview');
+            const name = data.name || 'Nouveau Persona';
+            const age = data.age ? ` (${data.age} ans)` : '';
+            
+            let detailsHTML = '';
+            
+            if (data.location) detailsHTML += `<div class="detail-item"><span class="detail-label">Localisation:</span> ${data.location}</div>`;
+            if (data.profession) detailsHTML += `<div class="detail-item"><span class="detail-label">Profession:</span> ${data.profession}</div>`;
+            if (data.expertise) detailsHTML += `<div class="detail-item"><span class="detail-label">Expertise:</span> ${data.expertise}</div>`;
+            if (data.budget) detailsHTML += `<div class="detail-item"><span class="detail-label">Budget:</span> ${data.budget}</div>`;
+            if (data.motivations) detailsHTML += `<div class="detail-item"><span class="detail-label">Motivations:</span> ${data.motivations.substring(0, 100)}${data.motivations.length > 100 ? '...' : ''}</div>`;
+            
+            // Afficher les mots-clés sous forme de tags
+            if (data.informational_keywords) {
+                const keywords = data.informational_keywords.split(',').map(k => k.trim()).filter(k => k);
+                if (keywords.length > 0) {
+                    detailsHTML += `<div class="detail-item"><span class="detail-label">Mots-clés info:</span><div class="keyword-tags">`;
+                    keywords.forEach(keyword => {
+                        detailsHTML += `<span class="keyword-tag">${keyword}</span>`;
+                    });
+                    detailsHTML += `</div></div>`;
+                }
+            }
+            
+            if (!detailsHTML) {
+                detailsHTML = '<div class="detail-item"><span class="detail-label">Remplissez le formulaire pour voir l\'aperçu</span></div>';
+            }
+            
+            preview.innerHTML = `
+                <div class="persona-avatar">${name.charAt(0).toUpperCase()}</div>
+                <div class="persona-name">${name}${age}</div>
+                <div class="persona-details">${detailsHTML}</div>
+            `;
+        }
+
+        // Gérer la soumission du formulaire
+        document.getElementById('personaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                db.run(`
+                    INSERT INTO personas (
+                        name, age, location, profession, expertise, motivations, fears,
+                        information_sources, budget, frequency, decision_process,
+                        informational_keywords, commercial_keywords, transactional_keywords, notes
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `, [
+                    data.name, data.age, data.location, data.profession, data.expertise,
+                    data.motivations, data.fears, data.information_sources, data.budget,
+                    data.frequency, data.decision_process, data.informational_keywords,
+                    data.commercial_keywords, data.transactional_keywords, data.notes
+                ]);
+                
+                saveDatabase();
+
+                // Tracker la création de persona
+                if (typeof trackPersonaCreated !== 'undefined') {
+                    trackPersonaCreated();
+                }
+
+                showStatus(`✅ Persona "${data.name}" sauvegardé avec succès !`);
+                loadSavedPersonas();
+                
+            } catch (error) {
+                showStatus(`❌ Erreur lors de la sauvegarde: ${error.message}`, 'error');
+            }
+        });
+
+        // Charger les personas sauvegardés
+        function loadSavedPersonas() {
+            const stmt = db.prepare("SELECT * FROM personas ORDER BY created_at DESC");
+            const personas = [];
+            while (stmt.step()) {
+                personas.push(stmt.getAsObject());
+            }
+            stmt.free();
+            
+            const listDiv = document.getElementById('savedPersonasList');
+            if (personas.length === 0) {
+                listDiv.innerHTML = '<p style="color: #6c757d; font-style: italic;">Aucun persona sauvegardé</p>';
+                return;
+            }
+            
+            listDiv.innerHTML = personas.map(persona => `
+                <div class="saved-persona-item">
+                    <div class="saved-persona-info">
+                        <strong>${persona.name}</strong> ${persona.age ? `(${persona.age} ans)` : ''}<br>
+                        <small style="color: #6c757d;">${persona.profession || 'Profession non renseignée'}</small>
+                    </div>
+                    <div class="saved-persona-actions">
+                        <button class="btn btn-small" onclick="loadPersona(${persona.id})">📝 Charger</button>
+                        <button class="btn btn-small" onclick="generatePersonaPDF(${persona.id})">📄 PDF</button>
+                        <button class="btn btn-danger btn-small" onclick="deletePersona(${persona.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Charger un persona dans le formulaire
+        function loadPersona(id) {
+            const stmt = db.prepare("SELECT * FROM personas WHERE id = ?");
+            stmt.bind([id]);
+            if (stmt.step()) {
+                const persona = stmt.getAsObject();
+                
+                // Remplir le formulaire
+                Object.keys(persona).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input && key !== 'id' && key !== 'created_at') {
+                        input.value = persona[key] || '';
+                    }
+                });
+                
+                updatePreview();
+                showStatus(`📝 Persona "${persona.name}" chargé dans le formulaire`);
+            }
+            stmt.free();
+        }
+
+        // Supprimer un persona
+        function deletePersona(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce persona ?')) {
+                db.run("DELETE FROM personas WHERE id = ?", [id]);
+                saveDatabase();
+                loadSavedPersonas();
+                showStatus('🗑️ Persona supprimé');
+            }
+        }
+
+        // Effacer le formulaire
+        function clearForm() {
+            document.getElementById('personaForm').reset();
+            updatePreview();
+        }
+
+        // Remplir avec des données de test
+        function fillTestData() {
+            const testData = {
+                name: 'Marie Dubois',
+                age: 35,
+                location: 'Lyon, Auvergne-Rhône-Alpes',
+                profession: 'Responsable marketing digital',
+                expertise: 'Avancé',
+                motivations: 'Développer ses compétences professionnelles, trouver des solutions innovantes pour son entreprise, rester à jour avec les dernières tendances du marché. Elle souhaite également optimiser ses processus de travail et améliorer ses résultats.',
+                fears: 'Peur de prendre de mauvaises décisions d\'investissement, manque de temps pour évaluer toutes les options, inquiétude de ne pas choisir la meilleure solution, crainte que les outils sélectionnés ne répondent pas aux attentes.',
+                information_sources: 'Blogs professionnels spécialisés, conférences et webinaires, réseaux sociaux professionnels (LinkedIn, Twitter), magazines du secteur, groupes et forums d\'experts, formations en ligne.',
+                budget: '1000-5000€',
+                frequency: 'Annuel',
+                decision_process: 'Recherche approfondie en ligne, comparaison des solutions disponibles, consultation de son équipe et de ses collègues, demande de démonstrations produit. Elle privilégie la qualité et le retour sur investissement, prend le temps d\'analyser avant de décider.',
+                informational_keywords: 'comment optimiser, guide pratique, meilleures pratiques, tutoriel avancé, stratégie efficace, formation professionnelle',
+                commercial_keywords: 'meilleur outil, comparatif solutions, avis utilisateurs, logiciel professionnel, plateforme recommandée, service qualité',
+                transactional_keywords: 'acheter licence, abonnement premium, devis personnalisé, essai gratuit, commande en ligne, tarif entreprise',
+                notes: 'Très active sur LinkedIn, partage régulièrement du contenu professionnel, participe à des événements sectoriels. Sensible à l\'innovation et à l\'efficacité des solutions proposées.'
+            };
+            
+            // Remplir tous les champs
+            Object.keys(testData).forEach(key => {
+                const input = document.getElementById(key);
+                if (input) {
+                    input.value = testData[key];
+                }
+            });
+            
+            updatePreview();
+            showStatus('🧪 Formulaire pré-rempli avec des données de test');
+        }
+
+        // Générer PDF du persona courant
+        function generatePDF() {
+            const formData = new FormData(document.getElementById('personaForm'));
+            const data = Object.fromEntries(formData);
+            
+            if (!data.name) {
+                showStatus('❌ Veuillez remplir au moins le nom du persona', 'error');
+                return;
+            }
+            
+            generatePersonaPDFFromData(data);
+        }
+
+        // Générer PDF d'un persona sauvegardé
+        function generatePersonaPDF(id) {
+            const stmt = db.prepare("SELECT * FROM personas WHERE id = ?");
+            stmt.bind([id]);
+            if (stmt.step()) {
+                const persona = stmt.getAsObject();
+                generatePersonaPDFFromData(persona);
+            }
+            stmt.free();
+        }
+
+        // Générer le PDF à partir des données
+        function generatePersonaPDFFromData(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configuration pour format compact
+            const margin = 15;
+            let y = margin;
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+            const colors = {
+                primary: [102, 126, 234],
+                secondary: [118, 75, 162],
+                text: [45, 55, 72],
+                lightGray: [248, 249, 250],
+                darkGray: [108, 117, 125]
+            };
+            
+            // Fonction pour dessiner un rectangle avec coins arrondis
+            function drawRoundedRect(x, y, width, height, radius, fillColor = null, strokeColor = null) {
+                if (fillColor) {
+                    doc.setFillColor(...fillColor);
+                }
+                if (strokeColor) {
+                    doc.setDrawColor(...strokeColor);
+                }
+                
+                doc.roundedRect(x, y, width, height, radius, radius, fillColor ? 'F' : 'S');
+            }
+            
+            // En-tête compact
+            doc.setFillColor(...colors.primary);
+            doc.rect(0, 0, pageWidth, 35, 'F');
+            
+            // Avatar circulaire plus petit
+            const avatarX = margin;
+            const avatarY = 7;
+            const avatarSize = 20;
+            doc.setFillColor(255, 255, 255);
+            doc.circle(avatarX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 'F');
+            doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+            doc.setFontSize(14);
+            const initial = (data.name || 'P').charAt(0).toUpperCase();
+            doc.text(initial, avatarX + avatarSize/2 - 2, avatarY + avatarSize/2 + 2);
+            
+            // Titre et nom plus compacts
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('FICHE PERSONA', avatarX + avatarSize + 10, avatarY + 8);
+            
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'normal');
+            const personaName = data.name || 'Persona sans nom';
+            doc.text(personaName, avatarX + avatarSize + 10, avatarY + 20);
+            
+            if (data.age) {
+                doc.setFontSize(12);
+                doc.text(`${data.age} ans`, avatarX + avatarSize + 10 + doc.getTextWidth(personaName) + 8, avatarY + 20);
+            }
+            
+            // Réinitialiser Y après l'en-tête compact
+            y = 45;
+            
+            // Layout compact en 2 colonnes pour tenir sur une page
+            const colWidth = (pageWidth - margin * 2 - 10) / 2;
+            let leftY = y;
+            let rightY = y;
+            
+            // Fonction pour ajouter du contenu de manière compacte
+            function addCompactSection(title, content, targetY, x, width, isLeft = true) {
+                if (!content) return targetY;
+                
+                doc.setTextColor(...colors.text);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                
+                // Remplacer les emojis par du texte pour éviter l'encodage
+                const cleanTitle = title.replace(/📍|💼|🎯|💰|💡|⚠️|📚|🔄|🤔|🔍|🛒|💳|📝/g, '');
+                doc.text(cleanTitle, x, targetY);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                
+                // Découper le contenu pour qu'il tienne
+                const maxLength = width === colWidth ? 150 : 300;
+                const truncatedContent = content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+                const lines = doc.splitTextToSize(truncatedContent, width - 5);
+                
+                doc.text(lines, x, targetY + 8);
+                return targetY + 8 + (lines.length * 4) + 8;
+            }
+            
+            // Section identité compacte
+            doc.setFillColor(...colors.primary);
+            doc.rect(margin, leftY, pageWidth - margin * 2, 15, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('IDENTITE', margin + 5, leftY + 10);
+            leftY += 20;
+            rightY = leftY;
+            
+            // Informations de base en 2 colonnes
+            if (data.location) {
+                leftY = addCompactSection('Localisation', data.location, leftY, margin, colWidth, true);
+            }
+            if (data.profession) {
+                rightY = addCompactSection('Profession', data.profession, rightY, margin + colWidth + 10, colWidth, false);
+            }
+            if (data.expertise) {
+                leftY = addCompactSection('Expertise', data.expertise, leftY, margin, colWidth, true);
+            }
+            if (data.budget) {
+                rightY = addCompactSection('Budget', data.budget, rightY, margin + colWidth + 10, colWidth, false);
+            }
+            
+            y = Math.max(leftY, rightY) + 10;
+            
+            // Section comportement
+            doc.setFillColor(...colors.secondary);
+            doc.rect(margin, y, pageWidth - margin * 2, 15, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('COMPORTEMENT', margin + 5, y + 10);
+            y += 20;
+            
+            leftY = y;
+            rightY = y;
+            
+            if (data.motivations) {
+                leftY = addCompactSection('Motivations', data.motivations, leftY, margin, colWidth, true);
+            }
+            if (data.fears) {
+                rightY = addCompactSection('Freins et peurs', data.fears, rightY, margin + colWidth + 10, colWidth, false);
+            }
+            if (data.information_sources) {
+                leftY = addCompactSection('Sources d\'info', data.information_sources, leftY, margin, colWidth, true);
+            }
+            if (data.decision_process) {
+                rightY = addCompactSection('Processus decision', data.decision_process, rightY, margin + colWidth + 10, colWidth, false);
+            }
+            if (data.frequency) {
+                leftY = addCompactSection('Frequence achat', data.frequency, leftY, margin, colWidth, true);
+            }
+            
+            y = Math.max(leftY, rightY) + 10;
+            
+            // Section mots-clés très compacte
+            if (data.informational_keywords || data.commercial_keywords || data.transactional_keywords) {
+                doc.setFillColor(...colors.primary);
+                doc.rect(margin, y, pageWidth - margin * 2, 15, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('MOTS-CLES', margin + 5, y + 10);
+                y += 20;
+                
+                leftY = y;
+                rightY = y;
+                
+                if (data.informational_keywords) {
+                    const keywords = data.informational_keywords.split(',').map(k => k.trim()).slice(0, 8).join(', ');
+                    leftY = addCompactSection('Informationnels', keywords, leftY, margin, colWidth, true);
+                }
+                if (data.commercial_keywords) {
+                    const keywords = data.commercial_keywords.split(',').map(k => k.trim()).slice(0, 8).join(', ');
+                    rightY = addCompactSection('Commerciaux', keywords, rightY, margin + colWidth + 10, colWidth, false);
+                }
+                if (data.transactional_keywords) {
+                    const keywords = data.transactional_keywords.split(',').map(k => k.trim()).slice(0, 8).join(', ');
+                    leftY = addCompactSection('Transactionnels', keywords, leftY, margin, colWidth, true);
+                }
+                
+                y = Math.max(leftY, rightY) + 10;
+            }
+            
+            // Notes en bas si place disponible
+            if (data.notes && y < pageHeight - 40) {
+                doc.setFillColor(...colors.lightGray);
+                doc.rect(margin, y, pageWidth - margin * 2, 20, 'F');
+                doc.setTextColor(...colors.text);
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.text('NOTES', margin + 5, y + 8);
+                doc.setFont('helvetica', 'normal');
+                const notesLines = doc.splitTextToSize(data.notes.substring(0, 200), pageWidth - margin * 2 - 10);
+                doc.text(notesLines, margin + 5, y + 15);
+                y += 25;
+            }
+            
+            // Footer compact
+            const footerY = pageHeight - 12;
+            doc.setFillColor(...colors.darkGray);
+            doc.rect(0, footerY - 3, pageWidth, 15, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(7);
+            doc.setFont('helvetica', 'normal');
+            const footerText = `Generateur Personas - ${new Date().toLocaleDateString('fr-FR')}`;
+            doc.text(footerText, margin, footerY + 2);
+            
+            // Sauvegarder
+            const fileName = `persona-${(data.name || 'sans-nom').toLowerCase().replace(/\s+/g, '-')}.pdf`;
+            doc.save(fileName);
+
+            // Tracker l'export PDF
+            if (typeof trackPersonaExportPDF !== 'undefined') {
+                trackPersonaExportPDF();
+            }
+
+            showStatus(`📄 PDF amélioré généré: ${fileName}`);
+        }
+
+        // Exporter toutes les données
+        function exportAllData() {
+            const stmt = db.prepare("SELECT * FROM personas ORDER BY created_at DESC");
+            const personas = [];
+            while (stmt.step()) {
+                personas.push(stmt.getAsObject());
+            }
+            stmt.free();
+            
+            const dataStr = JSON.stringify(personas, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `personas-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showStatus('📊 Données exportées en JSON');
+        }
+
+        // Navigation entre les pages
+        let currentPage = 'personaCreation';
+        let positionedPersonas = {};
+
+        function showPersonaCreation() {
+            document.getElementById('personaCreationPage').style.display = 'grid';
+            document.getElementById('positioningMatrixPage').style.display = 'none';
+            document.getElementById('btnPersonaCreation').className = 'btn btn-small';
+            document.getElementById('btnPositioning').className = 'btn btn-small btn-secondary';
+            currentPage = 'personaCreation';
+        }
+
+        function showPositioningMatrix() {
+            document.getElementById('personaCreationPage').style.display = 'none';
+            document.getElementById('positioningMatrixPage').style.display = 'block';
+            document.getElementById('btnPersonaCreation').className = 'btn btn-small btn-secondary';
+            document.getElementById('btnPositioning').className = 'btn btn-small';
+            currentPage = 'positioning';
+            loadPersonasForPositioning();
+        }
+
+        // Charger les personas pour le positionnement
+        function loadPersonasForPositioning() {
+            if (!db) return;
+            
+            const stmt = db.prepare("SELECT * FROM personas ORDER BY name");
+            const personas = [];
+            while (stmt.step()) {
+                personas.push(stmt.getAsObject());
+            }
+            stmt.free();
+            
+            // Remplir la liste des personas
+            const personaList = document.getElementById('personaList');
+            const personaSelect = document.getElementById('personaSelect');
+            
+            personaList.innerHTML = '';
+            personaSelect.innerHTML = '<option value="">Choisir...</option>';
+            
+            if (personas.length === 0) {
+                personaList.innerHTML = '<p style="color: #6c757d; font-style: italic;">Aucun persona disponible</p>';
+                return;
+            }
+            
+            personas.forEach(persona => {
+                // Liste des personas
+                const isPositioned = positionedPersonas[persona.id];
+                personaList.innerHTML += `
+                    <div style="padding: 8px; margin: 5px 0; background: ${isPositioned ? '#d4edda' : '#fff'}; border: 1px solid #dee2e6; border-radius: 4px;">
+                        <strong>${persona.name}</strong><br>
+                        <small style="color: #6c757d;">${persona.profession || 'Sans profession'}</small>
+                        ${isPositioned ? '<br><span style="color: #28a745; font-size: 0.8em;">✓ Positionné</span>' : ''}
+                    </div>
+                `;
+                
+                // Sélecteur
+                personaSelect.innerHTML += `<option value="${persona.id}">${persona.name}</option>`;
+            });
+        }
+
+        // Positionnement d'un persona sur la matrice
+        function positionPersona() {
+            const personaId = document.getElementById('personaSelect').value;
+            const valueScore = parseInt(document.getElementById('valueScore').value);
+            const volumeScore = parseInt(document.getElementById('volumeScore').value);
+            
+            if (!personaId) {
+                showStatus('❌ Veuillez sélectionner un persona', 'error');
+                return;
+            }
+            
+            // Récupérer les données du persona
+            const stmt = db.prepare("SELECT * FROM personas WHERE id = ?");
+            stmt.bind([personaId]);
+            let persona = null;
+            if (stmt.step()) {
+                persona = stmt.getAsObject();
+            }
+            stmt.free();
+            
+            if (!persona) return;
+            
+            // Supprimer l'ancienne position si elle existe
+            const existingPersona = document.getElementById(`persona-${personaId}`);
+            if (existingPersona) {
+                existingPersona.remove();
+            }
+            
+            // Calculer la position sur la matrice (500x500px)
+            const x = (volumeScore - 1) * (500 - 60) / 9 + 20; // -60 pour la marge, /9 pour l'échelle 1-10
+            const y = (10 - valueScore) * (500 - 60) / 9 + 20; // Inverser Y car l'axe Y va vers le bas
+            
+            // Déterminer la couleur selon le quadrant
+            let bgColor = '#6c757d'; // Dilemme par défaut
+            if (valueScore > 5 && volumeScore > 5) bgColor = '#28a745'; // Champions
+            else if (valueScore > 5 && volumeScore <= 5) bgColor = '#ffc107'; // Pépites
+            else if (valueScore <= 5 && volumeScore > 5) bgColor = '#6c757d'; // Masse
+            else bgColor = '#dc3545'; // Dilemme
+            
+            // Créer l'élément persona sur la matrice
+            const matrix = document.getElementById('matrix');
+            const personaElement = document.createElement('div');
+            personaElement.id = `persona-${personaId}`;
+            personaElement.style.cssText = `
+                position: absolute;
+                left: ${x}px;
+                top: ${y}px;
+                width: 40px;
+                height: 40px;
+                background: ${bgColor};
+                border: 2px solid white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                transition: transform 0.2s;
+            `;
+            
+            personaElement.innerHTML = persona.name.charAt(0).toUpperCase();
+            personaElement.title = `${persona.name}\nValeur: ${valueScore}/10\nVolume: ${volumeScore}/10`;
+            
+            // Effet hover
+            personaElement.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+            personaElement.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            // Clic pour supprimer
+            personaElement.addEventListener('click', function() {
+                if (confirm('Supprimer ce persona de la matrice ?')) {
+                    this.remove();
+                    delete positionedPersonas[personaId];
+                    loadPersonasForPositioning();
+                }
+            });
+            
+            matrix.appendChild(personaElement);
+            
+            // Sauvegarder la position
+            positionedPersonas[personaId] = {
+                valueScore: valueScore,
+                volumeScore: volumeScore,
+                x: x,
+                y: y
+            };
+            
+            // Réinitialiser le formulaire
+            document.getElementById('personaSelect').value = '';
+            document.getElementById('valueScore').value = '5';
+            document.getElementById('volumeScore').value = '5';
+            document.getElementById('valueDisplay').textContent = '5';
+            document.getElementById('volumeDisplay').textContent = '5';
+            
+            loadPersonasForPositioning();
+
+            // Tracker le positionnement sur la matrice
+            if (typeof trackMatrixPositioning !== 'undefined') {
+                trackMatrixPositioning();
+            }
+
+            showStatus(`✅ ${persona.name} positionné sur la matrice`);
+        }
+
+        // Fonctions d'exportation de la matrice
+        function exportMatrixImage() {
+            const matrix = document.getElementById('matrix');
+            
+            // Utiliser html2canvas si disponible, sinon utiliser une solution alternative
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(matrix).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `matrice-positionnement-${new Date().toISOString().split('T')[0]}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+
+                    // Tracker l'export d'image de matrice
+                    if (typeof trackMatrixExport !== 'undefined') {
+                        trackMatrixExport('PNG');
+                    }
+
+                    showStatus('📸 Image de la matrice exportée');
+                });
+            } else {
+                // Solution alternative : créer un canvas manuellement
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 500;
+                canvas.height = 500;
+                
+                // Fond blanc
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 500, 500);
+                
+                // Quadrillage
+                ctx.strokeStyle = '#f8f9fa';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= 500; i += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, 500);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(500, i);
+                    ctx.stroke();
+                }
+                
+                // Axes
+                ctx.strokeStyle = '#dee2e6';
+                ctx.lineWidth = 2;
+                // Axe vertical
+                ctx.beginPath();
+                ctx.moveTo(250, 0);
+                ctx.lineTo(250, 500);
+                ctx.stroke();
+                // Axe horizontal
+                ctx.beginPath();
+                ctx.moveTo(0, 250);
+                ctx.lineTo(500, 250);
+                ctx.stroke();
+                
+                // Labels des quadrants
+                ctx.font = 'bold 12px Arial';
+                ctx.fillStyle = '#28a745';
+                ctx.fillText('Champions', 380, 30);
+                ctx.fillStyle = '#ffc107';
+                ctx.fillText('Pépites', 20, 30);
+                ctx.fillStyle = '#6c757d';
+                ctx.fillText('Masse', 380, 480);
+                ctx.fillStyle = '#dc3545';
+                ctx.fillText('Dilemme', 20, 480);
+                
+                // Dessiner les personas positionnés
+                Object.keys(positionedPersonas).forEach(personaId => {
+                    const position = positionedPersonas[personaId];
+                    let color = '#6c757d';
+                    if (position.valueScore > 5 && position.volumeScore > 5) color = '#28a745';
+                    else if (position.valueScore > 5 && position.volumeScore <= 5) color = '#ffc107';
+                    else if (position.valueScore <= 5 && position.volumeScore > 5) color = '#6c757d';
+                    else color = '#dc3545';
+                    
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(position.x + 20, position.y + 20, 20, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Initiale du persona
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    const personaElement = document.getElementById(`persona-${personaId}`);
+                    if (personaElement) {
+                        ctx.fillText(personaElement.innerHTML, position.x + 20, position.y + 25);
+                    }
+                });
+                
+                // Télécharger l'image
+                const link = document.createElement('a');
+                link.download = `matrice-positionnement-${new Date().toISOString().split('T')[0]}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                showStatus('📸 Image de la matrice exportée');
+            }
+        }
+
+        function exportMatrixData() {
+            const matrixData = {
+                exportDate: new Date().toISOString(),
+                positionedPersonas: {},
+                quadrantAnalysis: {
+                    champions: [],
+                    pepites: [],
+                    masse: [],
+                    dilemme: []
+                }
+            };
+            
+            // Récupérer les données des personas positionnés
+            Object.keys(positionedPersonas).forEach(personaId => {
+                const stmt = db.prepare("SELECT * FROM personas WHERE id = ?");
+                stmt.bind([personaId]);
+                if (stmt.step()) {
+                    const persona = stmt.getAsObject();
+                    const position = positionedPersonas[personaId];
+                    
+                    const personaData = {
+                        ...persona,
+                        valueScore: position.valueScore,
+                        volumeScore: position.volumeScore,
+                        position: {
+                            x: position.x,
+                            y: position.y
+                        }
+                    };
+                    
+                    matrixData.positionedPersonas[personaId] = personaData;
+                    
+                    // Classer par quadrant
+                    if (position.valueScore > 5 && position.volumeScore > 5) {
+                        matrixData.quadrantAnalysis.champions.push(personaData);
+                    } else if (position.valueScore > 5 && position.volumeScore <= 5) {
+                        matrixData.quadrantAnalysis.pepites.push(personaData);
+                    } else if (position.valueScore <= 5 && position.volumeScore > 5) {
+                        matrixData.quadrantAnalysis.masse.push(personaData);
+                    } else {
+                        matrixData.quadrantAnalysis.dilemme.push(personaData);
+                    }
+                }
+                stmt.free();
+            });
+            
+            const dataStr = JSON.stringify(matrixData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `matrice-positionnement-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+
+            // Tracker l'export de données de matrice
+            if (typeof trackMatrixExport !== 'undefined') {
+                trackMatrixExport('JSON');
+            }
+
+            showStatus('📊 Données de la matrice exportées');
+        }
+
+        function exportMatrixPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const margin = 20;
+            let y = margin;
+            const pageWidth = doc.internal.pageSize.width;
+            const colors = {
+                primary: [102, 126, 234],
+                champions: [40, 167, 69],
+                pepites: [255, 193, 7],
+                masse: [108, 117, 125],
+                dilemme: [220, 53, 69]
+            };
+            
+            // En-tête
+            doc.setFillColor(...colors.primary);
+            doc.rect(0, 0, pageWidth, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.text('MATRICE DE POSITIONNEMENT', margin, 25);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Analyse Valeur vs Volume - ${new Date().toLocaleDateString('fr-FR')}`, margin, 35);
+            
+            y = 60;
+            
+            // Dessiner la matrice
+            const matrixSize = 120;
+            const matrixX = margin;
+            const matrixY = y;
+            
+            // Fond et quadrillage
+            doc.setDrawColor(238, 238, 238);
+            doc.setLineWidth(0.5);
+            for (let i = 0; i <= 10; i++) {
+                const x = matrixX + (i * matrixSize / 10);
+                const yLine = matrixY + (i * matrixSize / 10);
+                doc.line(matrixX, yLine, matrixX + matrixSize, yLine);
+                doc.line(x, matrixY, x, matrixY + matrixSize);
+            }
+            
+            // Bordure de la matrice
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(1);
+            doc.rect(matrixX, matrixY, matrixSize, matrixSize);
+            
+            // Axes centraux
+            doc.setDrawColor(108, 117, 125);
+            doc.setLineWidth(1);
+            doc.line(matrixX + matrixSize/2, matrixY, matrixX + matrixSize/2, matrixY + matrixSize);
+            doc.line(matrixX, matrixY + matrixSize/2, matrixX + matrixSize, matrixY + matrixSize/2);
+            
+            // Labels des axes
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            // Axe Y (Valeur)
+            doc.text('VALEUR', matrixX - 15, matrixY + matrixSize/2 - 5);
+            doc.text('CLIENT', matrixX - 15, matrixY + matrixSize/2 + 5);
+            // Axe X (Volume)
+            doc.text('VOLUME POTENTIEL', matrixX + matrixSize/2 - 25, matrixY + matrixSize + 15);
+            
+            // Labels des quadrants
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...colors.champions);
+            doc.text('Champions', matrixX + matrixSize - 25, matrixY + 10);
+            doc.setTextColor(...colors.pepites);
+            doc.text('Pepites', matrixX + 5, matrixY + 10);
+            doc.setTextColor(...colors.masse);
+            doc.text('Masse', matrixX + matrixSize - 20, matrixY + matrixSize - 5);
+            doc.setTextColor(...colors.dilemme);
+            doc.text('Dilemme', matrixX + 5, matrixY + matrixSize - 5);
+            
+            // Positionner les personas
+            Object.keys(positionedPersonas).forEach(personaId => {
+                const position = positionedPersonas[personaId];
+                const stmt = db.prepare("SELECT name FROM personas WHERE id = ?");
+                stmt.bind([personaId]);
+                if (stmt.step()) {
+                    const persona = stmt.getAsObject();
+                    
+                    // Calculer la position sur la matrice PDF
+                    const pdfX = matrixX + ((position.volumeScore - 1) * matrixSize / 9);
+                    const pdfY = matrixY + ((10 - position.valueScore) * matrixSize / 9);
+                    
+                    // Déterminer la couleur
+                    let color = colors.dilemme;
+                    if (position.valueScore > 5 && position.volumeScore > 5) color = colors.champions;
+                    else if (position.valueScore > 5 && position.volumeScore <= 5) color = colors.pepites;
+                    else if (position.valueScore <= 5 && position.volumeScore > 5) color = colors.masse;
+                    
+                    // Dessiner le cercle
+                    doc.setFillColor(...color);
+                    doc.circle(pdfX, pdfY, 3, 'F');
+                    
+                    // Ajouter l'initiale
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(6);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(persona.name.charAt(0).toUpperCase(), pdfX - 1, pdfY + 1);
+                }
+                stmt.free();
+            });
+            
+            // Analyse par quadrants
+            y = matrixY + matrixSize + 30;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('ANALYSE PAR QUADRANTS', margin, y);
+            y += 15;
+            
+            const quadrants = [
+                { name: 'Champions', color: colors.champions, desc: 'Haute valeur, gros volume - Priorite absolue' },
+                { name: 'Pepites', color: colors.pepites, desc: 'Haute valeur, petit volume - Developper' },
+                { name: 'Masse', color: colors.masse, desc: 'Faible valeur, gros volume - Optimiser' },
+                { name: 'Dilemme', color: colors.dilemme, desc: 'Faible valeur, petit volume - Questionner' }
+            ];
+            
+            quadrants.forEach(quadrant => {
+                doc.setFillColor(...quadrant.color);
+                doc.rect(margin, y, 5, 8, 'F');
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text(quadrant.name, margin + 10, y + 6);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.text(quadrant.desc, margin + 40, y + 6);
+                
+                // Lister les personas de ce quadrant
+                let quadrantPersonas = [];
+                Object.keys(positionedPersonas).forEach(personaId => {
+                    const position = positionedPersonas[personaId];
+                    let inQuadrant = false;
+                    
+                    if (quadrant.name === 'Champions' && position.valueScore > 5 && position.volumeScore > 5) inQuadrant = true;
+                    else if (quadrant.name === 'Pepites' && position.valueScore > 5 && position.volumeScore <= 5) inQuadrant = true;
+                    else if (quadrant.name === 'Masse' && position.valueScore <= 5 && position.volumeScore > 5) inQuadrant = true;
+                    else if (quadrant.name === 'Dilemme' && position.valueScore <= 5 && position.volumeScore <= 5) inQuadrant = true;
+                    
+                    if (inQuadrant) {
+                        const stmt = db.prepare("SELECT name FROM personas WHERE id = ?");
+                        stmt.bind([personaId]);
+                        if (stmt.step()) {
+                            quadrantPersonas.push(stmt.getAsObject().name);
+                        }
+                        stmt.free();
+                    }
+                });
+                
+                if (quadrantPersonas.length > 0) {
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(`Personas: ${quadrantPersonas.join(', ')}`, margin + 10, y + 14);
+                    y += 20;
+                } else {
+                    y += 12;
+                }
+            });
+            
+            // Footer
+            const footerY = doc.internal.pageSize.height - 15;
+            doc.setTextColor(108, 117, 125);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Generateur de Personas - Matrice de Positionnement', margin, footerY);
+            
+            // Sauvegarder
+            const fileName = `matrice-positionnement-${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+
+            // Tracker l'export PDF de matrice
+            if (typeof trackMatrixExport !== 'undefined') {
+                trackMatrixExport('PDF');
+            }
+
+            showStatus(`📄 PDF de la matrice généré: ${fileName}`);
+        }
+
+        // Event listeners pour l'aperçu en temps réel
+        document.addEventListener('DOMContentLoaded', function() {
+            initDatabase();
+            
+            // Mettre à jour l'aperçu à chaque modification
+            const inputs = document.querySelectorAll('#personaForm input, #personaForm textarea, #personaForm select');
+            inputs.forEach(input => {
+                input.addEventListener('input', updatePreview);
+                input.addEventListener('change', updatePreview);
+            });
+            
+            // Event listeners pour les sliders
+            document.getElementById('valueScore').addEventListener('input', function() {
+                document.getElementById('valueDisplay').textContent = this.value;
+            });
+            
+            document.getElementById('volumeScore').addEventListener('input', function() {
+                document.getElementById('volumeDisplay').textContent = this.value;
+            });
+            
+            updatePreview();
+        });
+    </script>
+</body>
+</html>

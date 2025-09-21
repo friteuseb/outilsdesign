@@ -1,0 +1,599 @@
+/* Styles spécifiques à la page d'analyse */
+
+.analyse-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Visualisation Ikigai */
+.ikigai-visualization {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: radial-gradient(circle, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    margin: 20px 0;
+}
+
+.ikigai-circle {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+}
+
+.circle {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    opacity: 0.85;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.circle:hover {
+    opacity: 0.95;
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.circle-content {
+    text-align: center;
+    z-index: 5;
+    position: relative;
+}
+
+.circle-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.circle-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.circle-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Positionnement des cercles */
+.passion-circle {
+    top: 0;
+    left: 125px;
+    background: linear-gradient(135deg, #e91e63 0%, #f06292 100%);
+}
+
+.mission-circle {
+    top: 125px;
+    right: 0;
+    background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+}
+
+.profession-circle {
+    bottom: 125px;
+    right: 0;
+    background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+}
+
+.vocation-circle {
+    bottom: 0;
+    left: 125px;
+    background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+}
+
+/* Intersections */
+.intersection {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #333;
+    border: 3px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.intersection:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.intersection-label {
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.love-good {
+    top: 85px;
+    right: 85px;
+}
+
+.good-paid {
+    bottom: 85px;
+    right: 85px;
+}
+
+.paid-need {
+    bottom: 85px;
+    left: 85px;
+}
+
+.need-love {
+    top: 85px;
+    left: 85px;
+}
+
+/* Centre Ikigai */
+.ikigai-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 15;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.center-icon {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.center-text {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Résumé Ikigai */
+.ikigai-statement {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    text-align: center;
+    font-style: italic;
+    position: relative;
+}
+
+.ikigai-statement::before {
+    content: '"';
+    font-size: 4rem;
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    opacity: 0.3;
+}
+
+.ikigai-statement::after {
+    content: '"';
+    font-size: 4rem;
+    position: absolute;
+    bottom: -30px;
+    right: 20px;
+    opacity: 0.3;
+}
+
+/* Barres de dimension */
+.dimension-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 0;
+}
+
+.dimension-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.bar-label {
+    min-width: 120px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bar-container {
+    flex: 1;
+    height: 25px;
+    background: #e9ecef;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 15px;
+    transition: width 0.8s ease;
+    position: relative;
+}
+
+.bar-fill.passion {
+    background: linear-gradient(90deg, #e91e63 0%, #f06292 100%);
+}
+
+.bar-fill.mission {
+    background: linear-gradient(90deg, #ff9800 0%, #ffb74d 100%);
+}
+
+.bar-fill.profession {
+    background: linear-gradient(90deg, #4caf50 0%, #81c784 100%);
+}
+
+.bar-fill.vocation {
+    background: linear-gradient(90deg, #2196f3 0%, #64b5f6 100%);
+}
+
+.bar-value {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Forces et défis */
+.strengths-challenges {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.strength-item, .challenge-item {
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.strength-item {
+    background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+    color: white;
+}
+
+.challenge-item {
+    background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+    color: white;
+}
+
+.item-icon {
+    font-size: 1.5rem;
+    margin-top: 2px;
+}
+
+.item-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+}
+
+.item-content p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Cartes d'intersection */
+.intersection-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 4px solid #667eea;
+    transition: transform 0.3s ease;
+}
+
+.intersection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.intersection-card h4 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.intersection-description {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.intersection-strength {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.strength-indicator {
+    flex: 1;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+    transition: width 0.8s ease;
+}
+
+.strength-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #667eea;
+}
+
+/* Liste d'actions */
+.actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.action-item {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.action-item:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.action-icon {
+    font-size: 2rem;
+    margin-top: 5px;
+}
+
+.action-content h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.action-content p {
+    margin: 0 0 10px 0;
+    color: #666;
+    line-height: 1.5;
+}
+
+.action-priority {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.priority-high {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.priority-medium {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.priority-low {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+/* Contrôles d'analyse */
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+/* Modal insights */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px 30px;
+    border-bottom: 2px solid #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.modal-close:hover {
+    background: #f8f9fa;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ikigai-circle {
+        width: 350px;
+        height: 350px;
+        transform: scale(0.8);
+    }
+    
+    .circle {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .passion-circle {
+        left: 85px;
+    }
+    
+    .mission-circle {
+        top: 85px;
+    }
+    
+    .profession-circle {
+        bottom: 85px;
+    }
+    
+    .vocation-circle {
+        left: 85px;
+    }
+    
+    .intersection {
+        width: 60px;
+        height: 60px;
+        font-size: 0.7rem;
+    }
+    
+    .love-good, .good-paid, .paid-need, .need-love {
+        top: 60px;
+        right: 60px;
+        bottom: 60px;
+        left: 60px;
+    }
+    
+    .ikigai-center {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .center-icon {
+        font-size: 1.5rem;
+    }
+    
+    .center-text {
+        font-size: 0.9rem;
+    }
+    
+    .controls-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+}
+
+/* Animations d'entrée */
+.analyse-content > * {
+    animation: slideInUp 0.6s ease;
+    animation-fill-mode: both;
+}
+
+.analyse-content > *:nth-child(1) { animation-delay: 0.1s; }
+.analyse-content > *:nth-child(2) { animation-delay: 0.2s; }
+.analyse-content > *:nth-child(3) { animation-delay: 0.3s; }
+.analyse-content > *:nth-child(4) { animation-delay: 0.4s; }
+.analyse-content > *:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

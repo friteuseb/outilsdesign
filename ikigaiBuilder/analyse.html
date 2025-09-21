@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse Ikigai - Visualisation et Insights</title>
+
+    <!-- Google Analytics 4 -->
+    <script src="../analytics.js"></script>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/analyse.css">
+    <script src="js/navigation.js" defer></script>
+    <script src="js/analyse.js" defer></script>
+    <script src="config.js"></script>
+    <script src="ai-coach.js"></script>
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🧠 Ikigai Builder</a>
+            
+            <button class="menu-toggle">☰</button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="formulaire.html" class="nav-link">
+                        <span class="nav-icon">📝</span>
+                        Mon Ikigai
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="coach.html" class="nav-link">
+                        <span class="nav-icon">🤖</span>
+                        Coach IA
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyse.html" class="nav-link active">
+                        <span class="nav-icon">📊</span>
+                        Analyse
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="recommandations.html" class="nav-link">
+                        <span class="nav-icon">🎯</span>
+                        Recommandations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="outils.html" class="nav-link">
+                        <span class="nav-icon">⚙️</span>
+                        Outils
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page d'analyse -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1>📊 Analyse de votre Ikigai</h1>
+            <p>Visualisez votre raison d'être et obtenez des insights personnalisés</p>
+        </div>
+
+        <div class="page-content">
+            <!-- Message si pas de données -->
+            <div class="no-data-message" id="noDataMessage" style="display: none;">
+                <div class="card" style="text-align: center; padding: 40px;">
+                    <h3>🔍 Aucune donnée à analyser</h3>
+                    <p>Vous devez d'abord remplir le formulaire Ikigai pour voir votre analyse.</p>
+                    <a href="formulaire.html" class="btn btn-primary btn-large">📝 Aller au formulaire</a>
+                </div>
+            </div>
+
+            <!-- Contenu principal d'analyse -->
+            <div class="analyse-content" id="analyseContent">
+                <!-- Visualisation Ikigai -->
+                <div class="visualization-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🎨</span>
+                            <div>
+                                <h3 class="card-title">Votre Ikigai Visualisé</h3>
+                                <p class="card-subtitle">Les 4 dimensions en interaction</p>
+                            </div>
+                        </div>
+                        
+                        <div class="ikigai-visualization">
+                            <div class="ikigai-circle" id="ikigaiCircle">
+                                <div class="circle passion-circle" id="passionCircle">
+                                    <div class="circle-content">
+                                        <div class="circle-icon">❤️</div>
+                                        <div class="circle-title">PASSION</div>
+                                        <div class="circle-subtitle">Ce que vous aimez</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="circle mission-circle" id="missionCircle">
+                                    <div class="circle-content">
+                                        <div class="circle-icon">🎯</div>
+                                        <div class="circle-title">MISSION</div>
+                                        <div class="circle-subtitle">Vos talents</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="circle profession-circle" id="professionCircle">
+                                    <div class="circle-content">
+                                        <div class="circle-icon">🌍</div>
+                                        <div class="circle-title">PROFESSION</div>
+                                        <div class="circle-subtitle">Besoins du monde</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="circle vocation-circle" id="vocationCircle">
+                                    <div class="circle-content">
+                                        <div class="circle-icon">💰</div>
+                                        <div class="circle-title">VOCATION</div>
+                                        <div class="circle-subtitle">Monétisable</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Intersections -->
+                                <div class="intersection love-good" id="loveGood">
+                                    <span class="intersection-label">Satisfaction</span>
+                                </div>
+                                <div class="intersection good-paid" id="goodPaid">
+                                    <span class="intersection-label">Profession</span>
+                                </div>
+                                <div class="intersection paid-need" id="paidNeed">
+                                    <span class="intersection-label">Carrière</span>
+                                </div>
+                                <div class="intersection need-love" id="needLove">
+                                    <span class="intersection-label">Mission</span>
+                                </div>
+                                
+                                <!-- Centre Ikigai -->
+                                <div class="ikigai-center" id="ikigaiCenter">
+                                    <div class="center-icon">✨</div>
+                                    <div class="center-text">IKIGAI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Résumé Ikigai -->
+                <div class="ikigai-summary" id="ikigaiSummary">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">✨</span>
+                            <div>
+                                <h3 class="card-title">Votre Ikigai</h3>
+                                <p class="card-subtitle">Votre raison d'être synthétisée</p>
+                            </div>
+                        </div>
+                        <div class="ikigai-statement" id="ikigaiStatement">
+                            <!-- Statement will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyse détaillée -->
+                <div class="detailed-analysis">
+                    <div class="grid grid-2">
+                        <!-- Répartition par dimension -->
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-icon">📈</span>
+                                <div>
+                                    <h3 class="card-title">Répartition</h3>
+                                    <p class="card-subtitle">Force de chaque dimension</p>
+                                </div>
+                            </div>
+                            <div class="dimension-bars" id="dimensionBars">
+                                <!-- Bars will be generated here -->
+                            </div>
+                        </div>
+
+                        <!-- Points forts et défis -->
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-icon">⚖️</span>
+                                <div>
+                                    <h3 class="card-title">Forces & Défis</h3>
+                                    <p class="card-subtitle">Équilibre de votre profil</p>
+                                </div>
+                            </div>
+                            <div class="strengths-challenges" id="strengthsChallenges">
+                                <!-- Content will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Intersections détaillées -->
+                <div class="intersections-detail">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🔗</span>
+                            <div>
+                                <h3 class="card-title">Intersections Clés</h3>
+                                <p class="card-subtitle">Là où vos dimensions se rencontrent</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-2">
+                            <div class="intersection-card">
+                                <h4>❤️ + 🎯 = Satisfaction</h4>
+                                <p class="intersection-description" id="satisfactionDesc">
+                                    Vos passions alignées avec vos talents
+                                </p>
+                                <div class="intersection-strength" id="satisfactionStrength">
+                                    <!-- Strength indicator -->
+                                </div>
+                            </div>
+                            
+                            <div class="intersection-card">
+                                <h4>🎯 + 💰 = Profession</h4>
+                                <p class="intersection-description" id="professionDesc">
+                                    Vos talents qui peuvent être rémunérés
+                                </p>
+                                <div class="intersection-strength" id="professionStrength">
+                                    <!-- Strength indicator -->
+                                </div>
+                            </div>
+                            
+                            <div class="intersection-card">
+                                <h4>💰 + 🌍 = Carrière</h4>
+                                <p class="intersection-description" id="careerDesc">
+                                    Compétences répondant aux besoins du marché
+                                </p>
+                                <div class="intersection-strength" id="careerStrength">
+                                    <!-- Strength indicator -->
+                                </div>
+                            </div>
+                            
+                            <div class="intersection-card">
+                                <h4>🌍 + ❤️ = Mission</h4>
+                                <p class="intersection-description" id="missionDesc">
+                                    Passions servant les besoins du monde
+                                </p>
+                                <div class="intersection-strength" id="missionStrength">
+                                    <!-- Strength indicator -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions recommandées -->
+                <div class="recommended-actions">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🚀</span>
+                            <div>
+                                <h3 class="card-title">Prochaines Étapes</h3>
+                                <p class="card-subtitle">Actions pour développer votre Ikigai</p>
+                            </div>
+                        </div>
+                        <div class="actions-list" id="actionsList">
+                            <!-- Actions will be generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrôles d'analyse -->
+                <div class="analysis-controls">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🛠️</span>
+                            <div>
+                                <h3 class="card-title">Options d'Analyse</h3>
+                                <p class="card-subtitle">Outils et actions avancées</p>
+                            </div>
+                        </div>
+                        <div class="controls-grid">
+                            <button class="btn btn-primary" onclick="refreshAnalysis()">
+                                🔄 Actualiser l'analyse
+                            </button>
+                            <button class="btn btn-info" onclick="showDetailedInsights()">
+                                🧠 Insights IA
+                            </button>
+                            <button class="btn btn-success" onclick="generatePDF()">
+                                📄 Générer PDF
+                            </button>
+                            <button class="btn btn-warning" onclick="navigateTo('recommandations.html')">
+                                🎯 Voir recommandations
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour insights détaillés -->
+    <div id="insightsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🧠 Insights IA Approfondis</h3>
+                <button class="modal-close" onclick="closeInsightsModal()">×</button>
+            </div>
+            <div class="modal-body" id="insightsContent">
+                <!-- Insights content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

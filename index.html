@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Thinking Tools - Découvrez mes outils créatifs</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Google Analytics 4 -->
+    <script src="analytics.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="title">🎯 Design Thinking Tools</h1>
+            <p class="subtitle">Une collection d'outils créatifs pour transformer vos idées en solutions concrètes</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="intro">
+                <h2>3 outils gratuits et open-source</h2>
+                <p>Découvrez mes outils de design thinking développés pour vous accompagner dans votre réflexion stratégique, personnelle et professionnelle.</p>
+            </section>
+
+            <div class="tools-grid">
+                <!-- Générateur de Personas -->
+                <div class="tool-card">
+                    <div class="card-header">
+                        <div class="tool-icon">👤</div>
+                        <h3>Générateur de Personas</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="tool-description">
+                            Créez, gérez et analysez vos personas marketing avec une matrice de positionnement interactive.
+                            Exportez vos fiches professionnelles en PDF.
+                        </p>
+                        <div class="features">
+                            <span class="feature-tag">📊 Matrice de positionnement</span>
+                            <span class="feature-tag">📄 Export PDF</span>
+                            <span class="feature-tag">💾 Sauvegarde locale</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="generateur_personas/index.html" class="btn btn-primary">
+                            🚀 Tester l'outil
+                        </a>
+                        <a href="https://github.com/friteuseb/generateur_personas" class="btn btn-secondary" target="_blank">
+                            📦 Voir le code
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Ikigai Builder -->
+                <div class="tool-card">
+                    <div class="card-header">
+                        <div class="tool-icon">🧠</div>
+                        <h3>Ikigai Builder</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="tool-description">
+                            Découvrez votre raison d'être avec l'aide d'un coach IA conversationnel.
+                            Analysez vos passions, talents et opportunités pour trouver votre Ikigai.
+                        </p>
+                        <div class="features">
+                            <span class="feature-tag">🤖 Coach IA</span>
+                            <span class="feature-tag">📊 Analyse personnalisée</span>
+                            <span class="feature-tag">🎯 Recommandations</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="ikigaiBuilder/demo.html" class="btn btn-primary">
+                            🚀 Tester l'outil
+                        </a>
+                        <a href="https://github.com/friteuseb/ikigaiBuilder" class="btn btn-secondary" target="_blank">
+                            📦 Voir le code
+                        </a>
+                    </div>
+                </div>
+
+                <!-- WhyBuilder -->
+                <div class="tool-card">
+                    <div class="card-header">
+                        <div class="tool-icon">💡</div>
+                        <h3>WhyBuilder</h3>
+                    </div>
+                    <div class="card-content">
+                        <p class="tool-description">
+                            Définissez votre "Why" selon la méthode Simon Sinek. Versions personnelle et professionnelle
+                            avec amélioration IA pour des messages puissants et mémorables.
+                        </p>
+                        <div class="features">
+                            <span class="feature-tag">👤 Version Perso</span>
+                            <span class="feature-tag">🏢 Version Pro</span>
+                            <span class="feature-tag">✨ Amélioration IA</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="whyBuilder/index.html" class="btn btn-primary">
+                            🚀 Tester l'outil
+                        </a>
+                        <a href="https://github.com/friteuseb/whyBuilder" class="btn btn-secondary" target="_blank">
+                            📦 Voir le code
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <section class="cta-section">
+                <h2>Prêt à transformer vos idées ?</h2>
+                <p>Choisissez l'outil qui correspond à votre besoin et commencez dès maintenant votre démarche de design thinking.</p>
+                <div class="cta-buttons">
+                    <a href="#tools-grid" class="btn btn-primary">Découvrir les outils</a>
+                    <a href="mailto:cyril.wolfangel@gmail.com" class="btn btn-outline">Me contacter</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Créé avec ❤️ par Cyril Wolfangel • Tous les outils sont gratuits et open-source</p>
+            <div class="footer-links">
+                <a href="https://github.com/friteuseb" target="_blank">GitHub</a>
+                <a href="mailto:cyril.wolfangel@gmail.com">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Animation au scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observer les cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.tool-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = `opacity 0.6s ease-out ${index * 0.2}s, transform 0.6s ease-out ${index * 0.2}s`;
+                observer.observe(card);
+            });
+        });
+
+        // Smooth scroll pour les ancres
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -393,7 +393,11 @@
             
             <div class="api-help" id="apiHelp">
                 <strong>Claude (Anthropic):</strong> Clé format "sk-ant-..." - Recommandé pour l'analyse business<br>
-                <strong>Endpoint:</strong> https://api.anthropic.com/v1/messages
+                <strong>Endpoint:</strong> https://api.anthropic.com/v1/messages<br>
+                <div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 0.85em;">
+                    ✅ <strong>Proxy PHP inclus :</strong> Les appels API passent maintenant par api-proxy.php<br>
+                    Résolution automatique des problèmes CORS. Nécessite PHP sur le serveur.
+                </div>
             </div>
             
             <div style="font-size: 0.9em; color: #856404; margin-top: 10px;">
@@ -1215,7 +1219,43 @@
                         throw new Error('Provider non supporté');
                 }
             } catch (error) {
-                console.error('Erreur API:', error);
+                console.error('Erreur API détaillée:', error);
+
+                // Gestion spécifique des erreurs
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    // Vérifier si le proxy PHP existe
+                    try {
+                        const proxyTest = await fetch('./api-proxy.php', { method: 'POST' });
+                        if (proxyTest.status === 400) {
+                            throw new Error(
+                                `🔧 PROXY PHP DÉTECTÉ MAIS ERREUR DE DONNÉES\n\n` +
+                                `Le proxy PHP est disponible mais n'a pas reçu les bonnes données.\n` +
+                                `Ceci est probablement un bug temporaire.\n\n` +
+                                `💡 Réessayez dans quelques secondes ou utilisez le mode basique.`
+                            );
+                        }
+                    } catch (proxyError) {
+                        throw new Error(
+                            `🚫 PROXY PHP NON DISPONIBLE\n\n` +
+                            `Le fichier api-proxy.php n'est pas accessible sur ce serveur.\n\n` +
+                            `✅ SOLUTIONS:\n` +
+                            `1. Vérifiez que api-proxy.php est dans le même dossier\n` +
+                            `2. Vérifiez que PHP est activé sur votre serveur\n` +
+                            `3. Utilisez le mode basique (qui fonctionne sans API)\n\n` +
+                            `💡 Le mode basique génère d'excellents rapports !`
+                        );
+                    }
+                }
+
+                // Autres types d'erreurs
+                if (error.message.includes('401') || error.message.includes('403')) {
+                    throw new Error('❌ Clé API invalide ou expirée. Vérifiez votre clé.');
+                }
+
+                if (error.message.includes('429')) {
+                    throw new Error('⏱️ Limite de taux dépassée. Attendez quelques minutes.');
+                }
+
                 throw error;
             }
         }
@@ -1276,76 +1316,47 @@ Génère un rapport professionnel structuré avec :
 Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragmatique et actionnable.`;
         }
 
-        async function callAnthropicAPI(apiKey, prompt) {
-            const response = await fetch('https://api.anthropic.com/v1/messages', {
+        // Fonction universelle pour appeler le proxy
+        async function callAPIProxy(provider, apiKey, prompt) {
+            const response = await fetch('./api-proxy.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey,
-                    'anthropic-version': '2023-06-01'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: 'claude-3-sonnet-20240229',
-                    max_tokens: 4000,
-                    messages: [{ role: 'user', content: prompt }]
+                    provider: provider,
+                    apiKey: apiKey,
+                    prompt: prompt
                 })
             });
 
-            if (!response.ok) throw new Error(`Erreur API Anthropic: ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Erreur inconnue' }));
+                throw new Error(`Erreur API ${provider}: ${errorData.error || response.statusText}`);
+            }
+
             const result = await response.json();
-            return result.content[0].text;
+            if (!result.success) {
+                throw new Error(result.error || 'Erreur de traitement API');
+            }
+
+            return result.text;
+        }
+
+        async function callAnthropicAPI(apiKey, prompt) {
+            return await callAPIProxy('anthropic', apiKey, prompt);
         }
 
         async function callOpenAIAPI(apiKey, prompt) {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-4-turbo-preview',
-                    messages: [{ role: 'user', content: prompt }],
-                    max_tokens: 4000
-                })
-            });
-
-            if (!response.ok) throw new Error(`Erreur API OpenAI: ${response.status}`);
-            const result = await response.json();
-            return result.choices[0].message.content;
+            return await callAPIProxy('openai', apiKey, prompt);
         }
 
         async function callGeminiAPI(apiKey, prompt) {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
-                })
-            });
-
-            if (!response.ok) throw new Error(`Erreur API Gemini: ${response.status}`);
-            const result = await response.json();
-            return result.candidates[0].content.parts[0].text;
+            return await callAPIProxy('gemini', apiKey, prompt);
         }
 
         async function callGrokAPI(apiKey, prompt) {
-            const response = await fetch('https://api.x.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'grok-beta',
-                    messages: [{ role: 'user', content: prompt }],
-                    max_tokens: 4000
-                })
-            });
-
-            if (!response.ok) throw new Error(`Erreur API Grok: ${response.status}`);
-            const result = await response.json();
-            return result.choices[0].message.content;
+            return await callAPIProxy('grok', apiKey, prompt);
         }
 
         function getSectorContext(sector) {
@@ -1802,16 +1813,27 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
                 if (!apiKey) {
                     // Mode dégradé sans API
                     const confirmDegraded = confirm(
-                        'Aucune clé API détectée.\n\n' +
-                        'Voulez-vous générer un rapport basique (sans analyse IA personnalisée) ?\n\n' +
-                        '✓ Scores et graphiques\n' +
-                        '✓ Recommandations génériques\n' +
-                        '✗ Analyse personnalisée'
+                        '🤖 MODE BASIQUE DISPONIBLE\n\n' +
+                        'Aucune clé API détectée, mais vous pouvez quand même générer un excellent rapport !\n\n' +
+                        '✅ INCLUS DANS LE MODE BASIQUE :\n' +
+                        '• Calcul précis des scores de maturité\n' +
+                        '• Graphiques interactifs (radar + barres)\n' +
+                        '• Analyse détaillée par domaine\n' +
+                        '• Recommandations sectorielles spécialisées\n' +
+                        '• Quick wins et projets structurants\n' +
+                        '• Plan d\'action priorisé\n\n' +
+                        '⚡ RAPPORT GÉNÉRÉ INSTANTANÉMENT !\n\n' +
+                        'Continuer avec le mode basique ?'
                     );
 
                     if (!confirmDegraded) {
                         generateBtn.disabled = false;
                         loadingDiv.style.display = 'none';
+                        // Proposer d'aller à la section API
+                        if (confirm('Voulez-vous configurer une clé API pour l\'analyse IA personnalisée ?')) {
+                            document.querySelector('.api-config').scrollIntoView({ behavior: 'smooth' });
+                            document.getElementById('apiKey').focus();
+                        }
                         return;
                     }
 
@@ -1849,16 +1871,18 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
 
                 // Ajouter l'indicateur de mode dégradé si nécessaire
                 const degradedModeIndicator = isDegradedMode ? `
-                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <h4 style="color: #856404; margin-bottom: 10px;">ℹ️ Mode d'analyse basique</h4>
-                        <p style="color: #856404; margin: 0;">
-                            Ce rapport a été généré sans intelligence artificielle.
-                            Pour une analyse personnalisée et des recommandations sur-mesure,
-                            utilisez une clé API (Claude, GPT, Gemini ou Grok).
+                    <div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="color: #155724; margin-bottom: 10px;">⚡ Rapport Basique Généré</h4>
+                        <p style="color: #155724; margin: 0;">
+                            Ce rapport complet inclut tous les scores, graphiques et recommandations sectorielles.
+                            Les fonctionnalités IA nécessitent une clé API mais le mode basique est déjà très performant !
                         </p>
-                        <button onclick="upgradeToAI()" style="background: #3498db; color: white; padding: 8px 16px; border: none; border-radius: 5px; margin-top: 10px; cursor: pointer;">
-                            🤖 Passer au mode IA personnalisé
-                        </button>
+                        <div style="margin-top: 10px;">
+                            <button onclick="upgradeToAI()" style="background: #007bff; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                                🤖 Activer l'IA personnalisée
+                            </button>
+                            <small style="color: #6c757d;">Optionnel - Le rapport actuel est déjà complet</small>
+                        </div>
                     </div>
                 ` : '';
 

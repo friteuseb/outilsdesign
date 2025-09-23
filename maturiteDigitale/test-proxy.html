@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test du Proxy API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #666; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test du Proxy API</h1>
+        <p>Cette page permet de tester le proxy PHP pour les appels aux APIs d'IA.</p>
+
+        <div class="test-section">
+            <h2>1. Test de connectivité du proxy</h2>
+            <p>Vérifie si le fichier api-proxy.php est accessible.</p>
+            <button onclick="testProxyConnectivity()">Tester la connectivité</button>
+            <div id="connectivityResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Test d'appel API</h2>
+            <p>Teste un appel réel à une API d'IA via le proxy.</p>
+
+            <select id="testProvider">
+                <option value="anthropic">Claude (Anthropic)</option>
+                <option value="openai">GPT (OpenAI)</option>
+                <option value="gemini">Gemini (Google)</option>
+                <option value="grok">Grok (xAI)</option>
+            </select>
+
+            <input type="password" id="testApiKey" placeholder="Clé API pour le test">
+
+            <button onclick="testAPICall()">Tester l'API</button>
+            <div id="apiResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Informations du serveur</h2>
+            <p>Affiche des informations utiles pour le diagnostic.</p>
+            <button onclick="showServerInfo()">Afficher les informations</button>
+            <div id="serverInfo" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testProxyConnectivity() {
+            const resultDiv = document.getElementById('connectivityResult');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Test en cours...';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch('./api-proxy.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({}) // Corps vide pour déclencher une erreur 400 attendue
+                });
+
+                if (response.status === 400) {
+                    const data = await response.json();
+                    resultDiv.textContent = '✅ Proxy accessible !\n\nLe proxy PHP répond correctement aux requêtes.\nErreur attendue: ' + data.error;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = '⚠️ Réponse inattendue\n\nStatus: ' + response.status + '\nLe proxy existe mais répond différemment qu\'attendu.';
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = '❌ Proxy non accessible\n\nErreur: ' + error.message + '\n\nVérifiez que:\n- api-proxy.php est dans le même dossier\n- PHP est activé sur votre serveur\n- Votre serveur web fonctionne correctement';
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function testAPICall() {
+            const resultDiv = document.getElementById('apiResult');
+            const provider = document.getElementById('testProvider').value;
+            const apiKey = document.getElementById('testApiKey').value;
+
+            if (!apiKey.trim()) {
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = '❌ Veuillez saisir une clé API';
+                resultDiv.className = 'result error';
+                return;
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Test en cours... (cela peut prendre 10-30 secondes)';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch('./api-proxy.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        provider: provider,
+                        apiKey: apiKey,
+                        prompt: 'Réponds juste "Test réussi!" pour confirmer que l\'API fonctionne.'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.textContent = '✅ Test API réussi !\n\nProvider: ' + data.provider + '\nRéponse: ' + data.text + '\n\n🎉 Votre clé API fonctionne parfaitement avec le proxy !';
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = '❌ Erreur API\n\n' + data.error + '\n\nVérifiez votre clé API et réessayez.';
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = '❌ Erreur de communication\n\n' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        function showServerInfo() {
+            const resultDiv = document.getElementById('serverInfo');
+            resultDiv.style.display = 'block';
+
+            const info = {
+                'URL actuelle': window.location.href,
+                'Protocol': window.location.protocol,
+                'Host': window.location.host,
+                'User Agent': navigator.userAgent,
+                'Date/Heure': new Date().toLocaleString()
+            };
+
+            let infoText = 'ℹ️ Informations du navigateur:\n\n';
+            for (const [key, value] of Object.entries(info)) {
+                infoText += key + ': ' + value + '\n';
+            }
+
+            infoText += '\n💡 Pour le diagnostic:\n';
+            infoText += '- Si vous utilisez file:// au lieu de http://, le proxy ne fonctionnera pas\n';
+            infoText += '- Assurez-vous d\'avoir PHP activé sur votre serveur web\n';
+            infoText += '- Le fichier api-proxy.php doit être dans le même dossier que cette page';
+
+            resultDiv.textContent = infoText;
+            resultDiv.className = 'result';
+        }
+
+        // Auto-test de connectivité au chargement
+        window.addEventListener('load', () => {
+            setTimeout(testProxyConnectivity, 1000);
+        });
+    </script>
+</body>
+</html>

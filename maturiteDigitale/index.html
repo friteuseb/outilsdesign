@@ -290,6 +290,19 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: 400px; /* Hauteur fixe pour un meilleur contrôle */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-wrapper h3 {
+            margin-bottom: 15px;
+            flex-shrink: 0; /* Éviter que le titre se rétrécisse */
+        }
+
+        .chart-wrapper canvas {
+            flex: 1; /* Le canvas prend tout l'espace restant */
+            max-height: 350px;
         }
 
         .report-content {
@@ -352,6 +365,14 @@
             
             .chart-container {
                 grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper {
+                height: 350px; /* Hauteur réduite sur mobile */
+            }
+
+            .chart-wrapper canvas {
+                max-height: 300px;
             }
             
             .sector-grid, .api-selection {
@@ -1689,7 +1710,40 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
             }
         }
 
-        // Fonctions graphiques et utilitaires (identiques à la version précédente)
+        // Fonction pour créer des abréviations intelligentes
+        function createSmartLabel(domain) {
+            const labelMappings = {
+                'Commercial & Marketing': 'Commercial & Mkt',
+                'Production & Opérations': 'Production & Ops',
+                'Service Client': 'Service Client',
+                'Ressources Humaines': 'RH & Collaboration',
+                'Finance & Administration': 'Finance & Admin',
+                'Infrastructure': 'Infrastructure',
+                'Innovation & Data': 'Innovation & Data'
+            };
+
+            // Utiliser le mapping s'il existe, sinon utiliser une troncature intelligente
+            if (labelMappings[domain]) {
+                return labelMappings[domain];
+            }
+
+            // Troncature intelligente : éviter de couper au milieu d'un mot
+            if (domain.length <= 18) {
+                return domain;
+            }
+
+            // Chercher le dernier espace avant la limite de 18 caractères
+            const truncated = domain.substring(0, 18);
+            const lastSpace = truncated.lastIndexOf(' ');
+
+            if (lastSpace > 10) { // S'assurer qu'on n'est pas trop court
+                return domain.substring(0, lastSpace) + '...';
+            }
+
+            return truncated + '...';
+        }
+
+        // Fonctions graphiques et utilitaires
         function createRadarChart(scores) {
             const ctx = document.getElementById('radarChart').getContext('2d');
             if (radarChart) radarChart.destroy();
@@ -1699,7 +1753,7 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
             radarChart = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: domains.map(domain => domain.length > 15 ? domain.substring(0, 15) + '...' : domain),
+                    labels: domains.map(domain => createSmartLabel(domain)),
                     datasets: [{
                         label: 'Score de Maturité (%)',
                         data: domains.map(domain => scores[domain]),
@@ -1711,7 +1765,48 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
                 },
                 options: {
                     responsive: true,
-                    scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: { stepSize: 20 } } }
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // Cacher la légende pour éviter la redondance
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    // Afficher le nom complet dans le tooltip
+                                    const index = context[0].dataIndex;
+                                    return domains[index];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: {
+                                stepSize: 20,
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 11,
+                                    weight: 'bold'
+                                },
+                                color: '#2c3e50'
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            bottom: 20,
+                            left: 20,
+                            right: 20
+                        }
+                    }
                 }
             });
         }
@@ -1725,7 +1820,7 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
             barChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: domains.map(domain => domain.length > 15 ? domain.substring(0, 15) + '...' : domain),
+                    labels: domains.map(domain => createSmartLabel(domain)),
                     datasets: [{
                         label: 'Score de Maturité (%)',
                         data: domains.map(domain => scores[domain]),
@@ -1740,7 +1835,62 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true, max: 100 } }
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // Cacher la légende pour éviter la redondance
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    // Afficher le nom complet dans le tooltip
+                                    const index = context[0].dataIndex;
+                                    return domains[index];
+                                },
+                                label: function(context) {
+                                    return 'Score: ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Score de Maturité (%)',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 10,
+                                    weight: 'bold'
+                                },
+                                color: '#2c3e50',
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 10,
+                            left: 10,
+                            right: 10
+                        }
+                    }
                 }
             });
         }

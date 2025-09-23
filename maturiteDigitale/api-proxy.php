@@ -165,34 +165,58 @@ if (!$responseData) {
 try {
     switch ($provider) {
         case 'anthropic':
+            // Essayer plusieurs formats possibles pour Anthropic
             if (isset($responseData['content'][0]['text'])) {
                 $text = $responseData['content'][0]['text'];
+            } elseif (isset($responseData['content']) && is_array($responseData['content']) && !empty($responseData['content'])) {
+                // Parfois le format peut varier
+                $content = $responseData['content'][0];
+                if (is_string($content)) {
+                    $text = $content;
+                } elseif (isset($content['text'])) {
+                    $text = $content['text'];
+                } else {
+                    throw new Exception('Structure content Anthropic non reconnue: ' . json_encode($content));
+                }
+            } elseif (isset($responseData['completion'])) {
+                // Ancien format API d'Anthropic
+                $text = $responseData['completion'];
+            } elseif (isset($responseData['text'])) {
+                // Format direct
+                $text = $responseData['text'];
             } else {
-                throw new Exception('Format de réponse Anthropic inattendu');
+                throw new Exception('Aucun texte trouvé dans la réponse Anthropic. Structure: ' . json_encode(array_keys($responseData)));
             }
             break;
 
         case 'openai':
             if (isset($responseData['choices'][0]['message']['content'])) {
                 $text = $responseData['choices'][0]['message']['content'];
+            } elseif (isset($responseData['choices'][0]['text'])) {
+                // Format completion API
+                $text = $responseData['choices'][0]['text'];
             } else {
-                throw new Exception('Format de réponse OpenAI inattendu');
+                throw new Exception('Format de réponse OpenAI inattendu. Structure: ' . json_encode(array_keys($responseData)));
             }
             break;
 
         case 'gemini':
             if (isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
                 $text = $responseData['candidates'][0]['content']['parts'][0]['text'];
+            } elseif (isset($responseData['text'])) {
+                $text = $responseData['text'];
             } else {
-                throw new Exception('Format de réponse Gemini inattendu');
+                throw new Exception('Format de réponse Gemini inattendu. Structure: ' . json_encode(array_keys($responseData)));
             }
             break;
 
         case 'grok':
             if (isset($responseData['choices'][0]['message']['content'])) {
                 $text = $responseData['choices'][0]['message']['content'];
+            } elseif (isset($responseData['choices'][0]['text'])) {
+                $text = $responseData['choices'][0]['text'];
             } else {
-                throw new Exception('Format de réponse Grok inattendu');
+                throw new Exception('Format de réponse Grok inattendu. Structure: ' . json_encode(array_keys($responseData)));
             }
             break;
 
@@ -205,13 +229,25 @@ try {
         'success' => true,
         'provider' => $provider,
         'text' => $text,
-        'raw_response' => $responseData
+        'http_code' => $httpCode,
+        'debug_info' => [
+            'response_keys' => array_keys($responseData),
+            'content_type' => isset($responseData['content']) ? gettype($responseData['content']) : 'not_set'
+        ]
     ]);
 
 } catch (Exception $e) {
+    // En cas d'erreur, retourner plus d'informations de debug
     echo json_encode([
         'error' => 'Erreur de parsing: ' . $e->getMessage(),
-        'raw_response' => $responseData
+        'provider' => $provider,
+        'http_code' => $httpCode,
+        'raw_response' => $responseData,
+        'debug_info' => [
+            'response_keys' => array_keys($responseData),
+            'first_key_content' => isset($responseData[array_keys($responseData)[0]]) ?
+                (is_array($responseData[array_keys($responseData)[0]]) ? 'array' : substr(json_encode($responseData[array_keys($responseData)[0]]), 0, 100)) : 'none'
+        ]
     ]);
 }
 

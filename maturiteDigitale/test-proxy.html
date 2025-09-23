@@ -148,10 +148,34 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    resultDiv.textContent = '✅ Test API réussi !\n\nProvider: ' + data.provider + '\nRéponse: ' + data.text + '\n\n🎉 Votre clé API fonctionne parfaitement avec le proxy !';
+                    resultDiv.textContent = '✅ Test API réussi !\n\nProvider: ' + data.provider + '\nRéponse: ' + data.text + '\nCode HTTP: ' + data.http_code + '\n\n🎉 Votre clé API fonctionne parfaitement avec le proxy !';
                     resultDiv.className = 'result success';
                 } else {
-                    resultDiv.textContent = '❌ Erreur API\n\n' + data.error + '\n\nVérifiez votre clé API et réessayez.';
+                    let errorText = '❌ Erreur API\n\n' + data.error + '\n\nVérifiez votre clé API et réessayez.';
+
+                    // Ajouter les informations de debug si disponibles
+                    if (data.debug_info) {
+                        errorText += '\n\n🔍 Informations de debug:';
+                        errorText += '\nClés de réponse: ' + JSON.stringify(data.debug_info.response_keys);
+                        if (data.debug_info.first_key_content) {
+                            errorText += '\nPremier contenu: ' + data.debug_info.first_key_content;
+                        }
+                    }
+
+                    if (data.http_code) {
+                        errorText += '\nCode HTTP: ' + data.http_code;
+                    }
+
+                    // Ajouter un échantillon de la réponse brute si disponible
+                    if (data.raw_response && typeof data.raw_response === 'object') {
+                        errorText += '\n\n📄 Structure de réponse:';
+                        errorText += '\n' + JSON.stringify(data.raw_response, null, 2).substring(0, 500);
+                        if (JSON.stringify(data.raw_response).length > 500) {
+                            errorText += '\n... (tronqué)';
+                        }
+                    }
+
+                    resultDiv.textContent = errorText;
                     resultDiv.className = 'result error';
                 }
             } catch (error) {

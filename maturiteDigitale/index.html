@@ -823,6 +823,7 @@
             <div class="utility-buttons">
                 <button class="utility-btn" onclick="exportToPDF()">Exporter PDF</button>
                 <button class="utility-btn" onclick="shareReport()">Partager</button>
+                <button class="utility-btn" onclick="showUsageStats()">📊 Statistiques</button>
                 <button class="utility-btn" onclick="newAudit()">Nouvel Audit</button>
             </div>
         </div>
@@ -1173,6 +1174,321 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
             return contexts[sector] || 'Secteur spécifique : Analyse adaptée aux particularités métier.';
         }
 
+        function generateBasicReport(data, scores) {
+            const sector = data.company_info.sector;
+            const globalScore = scores['Global'];
+            const domains = Object.keys(scores).filter(domain => domain !== 'Global');
+
+            // Déterminer le niveau de maturité
+            let maturityLevel, maturityDescription;
+            if (globalScore >= 80) {
+                maturityLevel = 'Avancée';
+                maturityDescription = 'L\'entreprise dispose d\'une maturité digitale élevée avec des processus largement automatisés.';
+            } else if (globalScore >= 60) {
+                maturityLevel = 'Intermédiaire';
+                maturityDescription = 'L\'entreprise a amorcé sa transformation digitale mais des améliorations significatives sont possibles.';
+            } else if (globalScore >= 40) {
+                maturityLevel = 'Basique';
+                maturityDescription = 'L\'entreprise utilise des outils digitaux de base mais manque de vision d\'ensemble et d\'intégration.';
+            } else {
+                maturityLevel = 'Émergente';
+                maturityDescription = 'L\'entreprise débute sa transformation digitale avec de nombreuses opportunités d\'amélioration.';
+            }
+
+            // Identifier les domaines forts et faibles
+            const sortedDomains = domains.sort((a, b) => scores[b] - scores[a]);
+            const topDomains = sortedDomains.slice(0, 2);
+            const weakDomains = sortedDomains.slice(-2);
+
+            // Générer les recommandations sectorielles
+            const sectorRecommendations = getSectorRecommendations(sector, scores);
+            const priorityRecommendations = getPriorityRecommendations(data, scores);
+
+            return `
+                <div style="line-height: 1.8; font-size: 14px;">
+                    <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+                        RAPPORT D'AUDIT - ${data.company_info.name.toUpperCase()}
+                    </h2>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h3 style="color: #3498db; margin-bottom: 15px;">📊 SYNTHÈSE EXÉCUTIVE</h3>
+                        <p><strong>Niveau de maturité :</strong> ${maturityLevel} (${globalScore}%)</p>
+                        <p><strong>Secteur d'activité :</strong> ${getSectorLabel(sector)}</p>
+                        <p><strong>Taille :</strong> ${data.company_info.employees} employés</p>
+                        <br>
+                        <p>${maturityDescription}</p>
+                        ${data.pain_points ? `<p><strong>Points de douleur identifiés :</strong> ${data.pain_points}</p>` : ''}
+                    </div>
+
+                    <h3 style="color: #3498db; margin: 25px 0 15px 0;">🎯 ANALYSE PAR DOMAINE</h3>
+
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <h4 style="color: #27ae60; margin-bottom: 10px;">✅ POINTS FORTS</h4>
+                        ${topDomains.map(domain => `
+                            <p><strong>${domain} (${scores[domain]}%)</strong> - ${getDomainAnalysis(domain, scores[domain], 'strong')}</p>
+                        `).join('')}
+                    </div>
+
+                    <div style="background: #fef9e7; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <h4 style="color: #f39c12; margin-bottom: 10px;">⚠️ AXES D'AMÉLIORATION</h4>
+                        ${weakDomains.map(domain => `
+                            <p><strong>${domain} (${scores[domain]}%)</strong> - ${getDomainAnalysis(domain, scores[domain], 'weak')}</p>
+                        `).join('')}
+                    </div>
+
+                    <h3 style="color: #3498db; margin: 25px 0 15px 0;">🚀 RECOMMANDATIONS PRIORITAIRES</h3>
+
+                    <div style="background: #fff; border-left: 4px solid #3498db; padding: 20px; margin: 15px 0;">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px;">QUICK WINS (3-6 mois)</h4>
+                        ${priorityRecommendations.quickWins.map(rec => `<p>• ${rec}</p>`).join('')}
+                    </div>
+
+                    <div style="background: #fff; border-left: 4px solid #e74c3c; padding: 20px; margin: 15px 0;">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px;">PROJETS STRUCTURANTS (6-18 mois)</h4>
+                        ${priorityRecommendations.structural.map(rec => `<p>• ${rec}</p>`).join('')}
+                    </div>
+
+                    <h4 style="color: #3498db; margin: 25px 0 15px 0;">📋 RECOMMANDATIONS SECTORIELLES</h4>
+                    <div style="background: #f0f8ff; padding: 15px; border-radius: 8px;">
+                        ${sectorRecommendations.map(rec => `<p>• ${rec}</p>`).join('')}
+                    </div>
+
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 25px 0;">
+                        <h4 style="color: #856404; margin-bottom: 10px;">⚡ PROCHAINES ÉTAPES</h4>
+                        <p>1. <strong>Prioriser</strong> les quick wins selon votre budget (${data.budget_range || 'à définir'})</p>
+                        <p>2. <strong>Constituer</strong> une équipe projet avec un sponsor métier</p>
+                        <p>3. <strong>Planifier</strong> selon votre niveau d'urgence (${data.urgency || 'à définir'})</p>
+                        <p>4. <strong>Mesurer</strong> les gains après chaque étape</p>
+
+                        <p style="margin-top: 15px; font-style: italic; color: #666;">
+                            💡 <strong>Conseil :</strong> Pour une analyse plus approfondie et personnalisée,
+                            utilisez une clé API pour bénéficier de recommandations adaptées par intelligence artificielle.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSectorLabel(sector) {
+            const labels = {
+                'industrie': 'Industrie & Manufacturing',
+                'btp': 'BTP & Construction',
+                'services': 'Services & Conseil',
+                'commerce': 'Commerce & Distribution',
+                'sante': 'Santé & Médical',
+                'education': 'Éducation & Formation',
+                'transport': 'Transport & Logistique',
+                'agriculture': 'Agriculture & Agroalimentaire',
+                'finance': 'Finance & Banque'
+            };
+            return labels[sector] || sector;
+        }
+
+        function getDomainAnalysis(domain, score, type) {
+            const analyses = {
+                'Commercial & Marketing': {
+                    strong: 'Bonne maîtrise des outils de prospection et de suivi client. L\'entreprise capitalise efficacement sur ses relations commerciales.',
+                    weak: 'Opportunités d\'amélioration sur la digitalisation du processus commercial et l\'automatisation du marketing.'
+                },
+                'Production & Opérations': {
+                    strong: 'Processus opérationnels bien structurés avec des outils de planification et de suivi adaptés.',
+                    weak: 'Potentiel d\'optimisation via l\'automatisation, l\'IoT et l\'amélioration du suivi temps réel.'
+                },
+                'Service Client': {
+                    strong: 'Organisation client satisfaisante avec des processus de support structurés.',
+                    weak: 'Amélioration possible de l\'expérience client via des outils de self-service et d\'automatisation.'
+                },
+                'Ressources Humaines': {
+                    strong: 'Gestion RH organisée avec de bons outils de collaboration et de suivi des équipes.',
+                    weak: 'Opportunités de digitalisation des processus RH et d\'amélioration de la collaboration.'
+                },
+                'Finance & Administration': {
+                    strong: 'Processus administratifs et financiers bien maîtrisés avec des outils adaptés.',
+                    weak: 'Potentiel d\'automatisation et d\'intégration des processus administratifs et financiers.'
+                },
+                'Infrastructure': {
+                    strong: 'Infrastructure technique robuste permettant de supporter la croissance digitale.',
+                    weak: 'Modernisation nécessaire de l\'infrastructure pour supporter une transformation digitale avancée.'
+                },
+                'Innovation & Data': {
+                    strong: 'Bonne approche de l\'innovation et exploitation efficace des données disponibles.',
+                    weak: 'Opportunités importantes d\'exploitation des données et de développement d\'une culture d\'innovation.'
+                }
+            };
+
+            return analyses[domain] ? analyses[domain][type] :
+                   `Score de ${score}% dans ce domaine ${type === 'strong' ? 'témoigne d\'une bonne maîtrise' : 'indique des axes d\'amélioration'}.`;
+        }
+
+        function getSectorRecommendations(sector, scores) {
+            const recommendations = {
+                'industrie': [
+                    'Intégration IoT pour le monitoring des équipements',
+                    'Mise en place de maintenance prédictive',
+                    'Digitalisation de la chaîne logistique',
+                    'Implémentation d\'un MES (Manufacturing Execution System)'
+                ],
+                'btp': [
+                    'Applications mobiles pour le suivi de chantiers',
+                    'Maquettes numériques BIM pour améliorer la collaboration',
+                    'Géolocalisation des équipes et matériels',
+                    'Dématérialisation des rapports de chantier'
+                ],
+                'services': [
+                    'CRM avancé pour la gestion de la relation client',
+                    'Outils de facturation au temps et gestion de projets',
+                    'Portail client pour le suivi des prestations',
+                    'Knowledge management pour capitaliser l\'expertise'
+                ],
+                'commerce': [
+                    'Plateforme e-commerce omnicanale',
+                    'Gestion intelligente des stocks',
+                    'Analyse prédictive des ventes',
+                    'Personnalisation de l\'expérience client'
+                ],
+                'sante': [
+                    'Dossier patient électronique sécurisé',
+                    'Télémédecine et consultations à distance',
+                    'Planning intelligent des ressources',
+                    'Conformité RGPD renforcée'
+                ],
+                'education': [
+                    'Plateforme LMS pour l\'apprentissage en ligne',
+                    'Outils de collaboration étudiants-enseignants',
+                    'Gestion digitale des inscriptions et évaluations',
+                    'Analytics d\'apprentissage'
+                ],
+                'transport': [
+                    'Optimisation des tournées par algorithmes',
+                    'Traçabilité temps réel des expéditions',
+                    'Gestion intelligente de la flotte',
+                    'Intégration EDI avec les partenaires'
+                ],
+                'agriculture': [
+                    'Agriculture de précision avec capteurs IoT',
+                    'Traçabilité de la production',
+                    'Gestion optimisée des ressources (eau, fertilisants)',
+                    'Plateformes de vente directe'
+                ],
+                'finance': [
+                    'Digitalisation complète du parcours client',
+                    'IA pour la détection de fraude',
+                    'API banking pour les partenariats fintech',
+                    'Conformité réglementaire automatisée'
+                ]
+            };
+
+            return recommendations[sector] || [
+                'Audit approfondi des processus métier',
+                'Cartographie des flux d\'information',
+                'Benchmark sectoriel des meilleures pratiques',
+                'Roadmap de transformation adaptée'
+            ];
+        }
+
+        function getPriorityRecommendations(data, scores) {
+            const quickWins = [];
+            const structural = [];
+
+            // Analyse des scores pour générer des recommandations
+            Object.keys(scores).forEach(domain => {
+                if (domain === 'Global') return;
+
+                const score = scores[domain];
+
+                if (score < 30) {
+                    // Domaines très faibles = projets structurants
+                    if (domain.includes('Commercial')) {
+                        structural.push('Implémentation d\'un CRM et digitalisation du processus de vente');
+                    } else if (domain.includes('Production')) {
+                        structural.push('Mise en place d\'un système de planification et suivi de production');
+                    } else if (domain.includes('Infrastructure')) {
+                        structural.push('Modernisation complète de l\'infrastructure informatique');
+                    }
+                } else if (score < 60) {
+                    // Domaines moyens = quick wins possibles
+                    if (domain.includes('Commercial')) {
+                        quickWins.push('Amélioration du site web et mise en place d\'outils de prospection digitale');
+                    } else if (domain.includes('Service Client')) {
+                        quickWins.push('Création d\'une FAQ en ligne et amélioration de la communication client');
+                    } else if (domain.includes('RH')) {
+                        quickWins.push('Déploiement d\'outils de collaboration (Teams, Slack) et digitalisation des plannings');
+                    }
+                }
+            });
+
+            // Recommandations par défaut si peu de données
+            if (quickWins.length === 0) {
+                quickWins.push(
+                    'Audit de sécurité informatique et mise en place de sauvegardes automatiques',
+                    'Formation des équipes aux outils digitaux existants',
+                    'Dématérialisation des documents administratifs'
+                );
+            }
+
+            if (structural.length === 0) {
+                structural.push(
+                    'Élaboration d\'une stratégie de transformation digitale globale',
+                    'Choix et implémentation d\'un ERP adapté au secteur',
+                    'Mise en place d\'indicateurs de performance digitaux'
+                );
+            }
+
+            return { quickWins, structural };
+        }
+
+        function upgradeToAI() {
+            const apiSection = document.querySelector('.api-config');
+            apiSection.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('apiKey').focus();
+            alert('Veuillez saisir votre clé API ci-dessus pour bénéficier de l\'analyse IA personnalisée.');
+        }
+
+        // Fonction de cache pour les rapports basiques
+        function getCachedBasicReport(formData) {
+            const cacheKey = 'basic_report_' + JSON.stringify(formData).length; // Simple hash
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                // Vérifier si les données sont identiques (simple vérification)
+                if (parsed.timestamp > Date.now() - 3600000) { // Cache valide 1 heure
+                    return parsed.report;
+                }
+            }
+            return null;
+        }
+
+        function cacheBasicReport(formData, report) {
+            const cacheKey = 'basic_report_' + JSON.stringify(formData).length;
+            const cacheData = {
+                report: report,
+                timestamp: Date.now(),
+                company: formData.company_info.name
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        }
+
+        // Analytics pour suivre l'utilisation des modes
+        function trackUsage(mode) {
+            const usage = JSON.parse(localStorage.getItem('audit_usage') || '{"ai": 0, "basic": 0}');
+            usage[mode]++;
+            localStorage.setItem('audit_usage', JSON.stringify(usage));
+        }
+
+        // Fonction pour afficher les statistiques d'utilisation
+        function showUsageStats() {
+            const usage = JSON.parse(localStorage.getItem('audit_usage') || '{"ai": 0, "basic": 0}');
+            const total = usage.ai + usage.basic;
+            if (total > 0) {
+                alert(`Statistiques d'utilisation :\n` +
+                      `Rapports IA : ${usage.ai} (${Math.round(usage.ai/total*100)}%)\n` +
+                      `Rapports basiques : ${usage.basic} (${Math.round(usage.basic/total*100)}%)\n` +
+                      `Total : ${total} rapports générés`);
+            } else {
+                alert('Aucun rapport généré pour le moment.');
+            }
+        }
+
         // Fonctions graphiques et utilitaires (identiques à la version précédente)
         function createRadarChart(scores) {
             const ctx = document.getElementById('radarChart').getContext('2d');
@@ -1272,11 +1588,7 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
             try {
                 const apiKey = document.getElementById('apiKey').value;
                 const companyName = document.getElementById('company_name').value;
-                
-                if (!apiKey) {
-                    alert('Veuillez saisir votre clé API');
-                    return;
-                }
+
                 if (!companyName) {
                     alert('Veuillez saisir le nom de l\'entreprise');
                     return;
@@ -1288,23 +1600,80 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
 
                 const formData = collectFormData();
                 const scores = calculateMaturityScores(formData);
-                const aiAnalysis = await generateAIAnalysis(formData, scores);
+
+                let reportContentHTML;
+                let isDegradedMode = false;
+
+                // Update loading message
+                const loadingText = loadingDiv.querySelector('p');
+                loadingText.textContent = apiKey ?
+                    'Analyse en cours et génération du rapport personnalisé...' :
+                    'Génération du rapport d\'analyse basique...';
+
+                if (!apiKey) {
+                    // Mode dégradé sans API
+                    const confirmDegraded = confirm(
+                        'Aucune clé API détectée.\n\n' +
+                        'Voulez-vous générer un rapport basique (sans analyse IA personnalisée) ?\n\n' +
+                        '✓ Scores et graphiques\n' +
+                        '✓ Recommandations génériques\n' +
+                        '✗ Analyse personnalisée'
+                    );
+
+                    if (!confirmDegraded) {
+                        generateBtn.disabled = false;
+                        loadingDiv.style.display = 'none';
+                        return;
+                    }
+
+                    // Générer rapport dégradé (avec cache)
+                    let cachedReport = getCachedBasicReport(formData);
+                    if (cachedReport) {
+                        reportContentHTML = cachedReport;
+                    } else {
+                        reportContentHTML = generateBasicReport(formData, scores);
+                        cacheBasicReport(formData, reportContentHTML);
+                    }
+                    isDegradedMode = true;
+                    trackUsage('basic');
+                } else {
+                    // Mode IA normal
+                    const aiAnalysis = await generateAIAnalysis(formData, scores);
+                    reportContentHTML = `
+                        <div style="white-space: pre-wrap; line-height: 1.8; font-size: 14px;">
+                            ${aiAnalysis
+                                .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #2c3e50; font-size: 1.1em;">$1</strong>')
+                                .replace(/^(\d+\..*$)/gm, '<h3 style="color: #3498db; margin: 20px 0 10px 0; font-size: 1.2em;">$1</h3>')
+                                .replace(/^(-.*$)/gm, '<li style="margin: 5px 0;">$1</li>')
+                                .replace(/\n/g, '<br>')
+                            }
+                        </div>
+                    `;
+                    trackUsage('ai');
+                }
 
                 displayGlobalScores(scores);
                 createRadarChart(scores);
                 createBarChart(scores);
 
                 const reportContent = document.getElementById('reportContent');
-                reportContent.innerHTML = `
-                    <div style="white-space: pre-wrap; line-height: 1.8; font-size: 14px;">
-                        ${aiAnalysis
-                            .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #2c3e50; font-size: 1.1em;">$1</strong>')
-                            .replace(/^(\d+\..*$)/gm, '<h3 style="color: #3498db; margin: 20px 0 10px 0; font-size: 1.2em;">$1</h3>')
-                            .replace(/^(-.*$)/gm, '<li style="margin: 5px 0;">$1</li>')
-                            .replace(/\n/g, '<br>')
-                        }
+
+                // Ajouter l'indicateur de mode dégradé si nécessaire
+                const degradedModeIndicator = isDegradedMode ? `
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="color: #856404; margin-bottom: 10px;">ℹ️ Mode d'analyse basique</h4>
+                        <p style="color: #856404; margin: 0;">
+                            Ce rapport a été généré sans intelligence artificielle.
+                            Pour une analyse personnalisée et des recommandations sur-mesure,
+                            utilisez une clé API (Claude, GPT, Gemini ou Grok).
+                        </p>
+                        <button onclick="upgradeToAI()" style="background: #3498db; color: white; padding: 8px 16px; border: none; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                            🤖 Passer au mode IA personnalisé
+                        </button>
                     </div>
-                `;
+                ` : '';
+
+                reportContent.innerHTML = degradedModeIndicator + reportContentHTML;
 
                 reportSection.style.display = 'block';
                 reportSection.scrollIntoView({ behavior: 'smooth' });

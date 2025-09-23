@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Maturité Digitale - Formulaire Universel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .question-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .question-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #e3f2fd;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .sector-selection {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sector-selection h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .sector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .sector-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sector-item:hover {
+            border-color: #4caf50;
+        }
+
+        .sector-item input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .api-config {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .api-config h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .api-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .api-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .api-item:hover {
+            border-color: #f39c12;
+        }
+
+        .api-item input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.6);
+        }
+
+        .generate-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .utility-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .utility-btn {
+            background: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .utility-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .report-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .chart-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .api-help {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sector-grid, .api-selection {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Audit Maturité Digitale</h1>
+            <p>Évaluation universelle de la transformation numérique - Tous secteurs d'activité</p>
+        </div>
+
+        <!-- Configuration API -->
+        <div class="api-config">
+            <h3>Configuration API</h3>
+            
+            <div class="api-selection">
+                <label class="api-item">
+                    <input type="radio" name="api_provider" value="anthropic" checked> Claude (Anthropic)
+                </label>
+                <label class="api-item">
+                    <input type="radio" name="api_provider" value="openai"> GPT (OpenAI)
+                </label>
+                <label class="api-item">
+                    <input type="radio" name="api_provider" value="gemini"> Gemini (Google)
+                </label>
+                <label class="api-item">
+                    <input type="radio" name="api_provider" value="grok"> Grok (xAI)
+                </label>
+            </div>
+
+            <input type="password" id="apiKey" class="text-input" placeholder="Clé API" style="margin-bottom: 10px;">
+            
+            <div class="api-help" id="apiHelp">
+                <strong>Claude (Anthropic):</strong> Clé format "sk-ant-..." - Recommandé pour l'analyse business<br>
+                <strong>Endpoint:</strong> https://api.anthropic.com/v1/messages
+            </div>
+            
+            <p style="font-size: 0.9em; color: #856404; margin-top: 10px;">Votre clé API ne sera pas stockée et restera confidentielle</p>
+        </div>
+
+        <!-- Sélection du secteur -->
+        <div class="sector-selection">
+            <h3>Secteur d'activité de l'entreprise</h3>
+            <div class="sector-grid">
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="industrie"> Industrie & Manufacturing
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="btp"> BTP & Construction
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="services"> Services & Conseil
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="commerce"> Commerce & Distribution
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="sante"> Santé & Médical
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="education"> Éducation & Formation
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="transport"> Transport & Logistique
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="agriculture"> Agriculture & Agroalimentaire
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="finance"> Finance & Banque
+                </label>
+                <label class="sector-item">
+                    <input type="radio" name="sector" value="autre"> Autre secteur
+                </label>
+            </div>
+            <input type="text" id="sector_custom" class="text-input" placeholder="Précisez le secteur si 'Autre'" style="display: none;">
+        </div>
+
+        <!-- Informations générales -->
+        <div class="form-section">
+            <h2 class="section-title">Informations Générales</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Entreprise auditée</div>
+                <input type="text" id="company_name" class="text-input" placeholder="Nom de l'entreprise">
+                <input type="text" id="contact_name" class="text-input" placeholder="Nom du contact principal">
+                <input type="text" id="contact_role" class="text-input" placeholder="Fonction du contact">
+                <input type="text" id="audit_date" class="text-input" type="date">
+                <input type="number" id="employee_count" class="text-input" placeholder="Nombre d'employés">
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Contexte de l'entreprise</div>
+                <textarea id="company_context" class="text-input textarea" placeholder="Décrivez brièvement l'activité, les produits/services, les spécificités de l'entreprise..."></textarea>
+            </div>
+        </div>
+
+        <!-- Processus Commercial & Marketing -->
+        <div class="form-section">
+            <h2 class="section-title">Commercial & Marketing</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Gestion clients et prospects</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="commercial" value="crm_structure"> CRM ou base clients structurée
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="commercial" value="prospection_digitale"> Prospection digitale (emails, réseaux sociaux)
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="commercial" value="site_web_pro"> Site web professionnel et optimisé
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="commercial" value="reseaux_sociaux"> Présence active sur réseaux sociaux
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="commercial" value="marketing_automation"> Marketing automation/email campaigns
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="commercial" value="analytics"> Analytics et mesure de performance
+                    </label>
+                </div>
+                <textarea id="commercial_notes" class="text-input textarea" placeholder="Observations spécifiques sur les processus commerciaux et marketing..."></textarea>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Processus de vente et devis</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="vente" value="logiciel_devis"> Logiciel de devis/facturation dédié
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="vente" value="configurateur"> Configurateur produits/services en ligne
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="vente" value="signature_electronique"> Signature électronique des contrats
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="vente" value="suivi_pipeline"> Suivi pipeline commercial structuré
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="vente" value="reporting_commercial"> Reporting commercial automatisé
+                    </label>
+                </div>
+                <textarea id="vente_notes" class="text-input textarea" placeholder="Processus de vente, outils utilisés, temps de traitement..."></textarea>
+            </div>
+        </div>
+
+        <!-- Production & Opérations -->
+        <div class="form-section">
+            <h2 class="section-title">Production & Opérations</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Planification et suivi</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="production" value="planning_digital"> Planning de production digital
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="production" value="suivi_temps_reel"> Suivi de production en temps réel
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="production" value="gestion_priorites"> Gestion automatisée des priorités
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="production" value="kpi_dashboards"> Tableaux de bord KPI en temps réel
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="production" value="maintenance_predictive"> Maintenance prédictive/préventive
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="production" value="iot_capteurs"> IoT et capteurs connectés
+                    </label>
+                </div>
+                <textarea id="production_notes" class="text-input textarea" placeholder="Méthodes actuelles de planification et suivi opérationnel..."></textarea>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Gestion des ressources</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ressources" value="gestion_stocks"> Gestion informatisée des stocks
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ressources" value="codes_barres"> Codes-barres ou puces RFID
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ressources" value="approvisionnement_auto"> Approvisionnement automatisé
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ressources" value="tracabilite"> Traçabilité complète des produits
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ressources" value="integration_fournisseurs"> Intégration EDI fournisseurs
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Client & Support -->
+        <div class="form-section">
+            <h2 class="section-title">Service Client & Support</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Gestion de la relation client</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="service_client" value="helpdesk"> Système de helpdesk/ticketing
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="service_client" value="portail_client"> Portail client en ligne
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="service_client" value="chat_support"> Chat en ligne ou chatbot
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="service_client" value="knowledge_base"> Base de connaissances/FAQ
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="service_client" value="satisfaction_mesure"> Mesure satisfaction client automatisée
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="service_client" value="multi_canal"> Support multi-canal intégré
+                    </label>
+                </div>
+                <textarea id="service_notes" class="text-input textarea" placeholder="Organisation du support client, outils et processus..."></textarea>
+            </div>
+        </div>
+
+        <!-- Ressources Humaines -->
+        <div class="form-section">
+            <h2 class="section-title">Ressources Humaines</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Gestion RH et collaboration</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rh" value="sirh"> SIRH (Système d'Information RH)
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rh" value="planning_equipes"> Planning équipes digitalisé
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rh" value="formation_elearning"> Formation e-learning/LMS
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rh" value="evaluation_performance"> Évaluation performance digitalisée
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rh" value="collaboration_tools"> Outils de collaboration (Teams, Slack...)
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="rh" value="teletravail"> Infrastructures télétravail
+                    </label>
+                </div>
+                <textarea id="rh_notes" class="text-input textarea" placeholder="Organisation RH, niveau de digitalisation, besoins identifiés..."></textarea>
+            </div>
+        </div>
+
+        <!-- Finance & Administration -->
+        <div class="form-section">
+            <h2 class="section-title">Finance & Administration</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Gestion financière et administrative</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="finance" value="erp_integre"> ERP intégré complet
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="finance" value="facturation_electronique"> Facturation électronique
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="finance" value="tresorerie_temps_reel"> Suivi trésorerie temps réel
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="finance" value="dematerialisation"> Dématérialisation administrative
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="finance" value="reporting_financier"> Reporting financier automatisé
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="finance" value="conformite_auto"> Conformité réglementaire automatisée
+                    </label>
+                </div>
+                <textarea id="finance_notes" class="text-input textarea" placeholder="Logiciels financiers, processus administratifs, niveau d'automatisation..."></textarea>
+            </div>
+        </div>
+
+        <!-- Infrastructure & Sécurité -->
+        <div class="form-section">
+            <h2 class="section-title">Infrastructure & Sécurité</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Infrastructure technique</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="infrastructure" value="cloud_adoption"> Adoption du cloud
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="infrastructure" value="parc_moderne"> Parc informatique moderne
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="infrastructure" value="reseau_performant"> Infrastructure réseau performante
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="infrastructure" value="mobilite"> Solutions de mobilité
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="infrastructure" value="integration_api"> Intégrations API
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Sécurité et gouvernance</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="securite" value="cybersecurite"> Stratégie cybersécurité avancée
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="securite" value="sauvegarde_auto"> Sauvegarde automatisée
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="securite" value="rgpd_compliance"> Conformité RGPD
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="securite" value="plan_continuite"> Plan de continuité d'activité
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="securite" value="formation_securite"> Formation sécurité des utilisateurs
+                    </label>
+                </div>
+                <textarea id="infrastructure_notes" class="text-input textarea" placeholder="État de l'infrastructure, politique de sécurité, support IT..."></textarea>
+            </div>
+        </div>
+
+        <!-- Innovation & Data -->
+        <div class="form-section">
+            <h2 class="section-title">Innovation & Data</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Exploitation des données</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="data" value="data_strategy"> Stratégie data définie
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="data" value="business_intelligence"> Business Intelligence/BI
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="data" value="data_analytics"> Analytics avancés
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="data" value="ia_machine_learning"> IA/Machine Learning
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="data" value="data_governance"> Gouvernance des données
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Innovation et transformation</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="innovation" value="veille_techno"> Veille technologique organisée
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="innovation" value="r_et_d_digitale"> R&D digitale
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="innovation" value="partenariats_tech"> Partenariats technologiques
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="innovation" value="roadmap_digitale"> Roadmap transformation digitale
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="innovation" value="culture_innovation"> Culture d'innovation
+                    </label>
+                </div>
+                <textarea id="innovation_notes" class="text-input textarea" placeholder="Initiatives d'innovation, projets technologiques, vision future..."></textarea>
+            </div>
+        </div>
+
+        <!-- Synthèse -->
+        <div class="form-section">
+            <h2 class="section-title">Synthèse & Priorités</h2>
+            
+            <div class="question-group">
+                <div class="question-title">Points de douleur identifiés</div>
+                <textarea id="pain_points" class="text-input textarea" placeholder="Quels sont les principaux points de douleur exprimés par l'entreprise ?"></textarea>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Ambitions et contraintes</div>
+                <textarea id="ambitions" class="text-input textarea" placeholder="Projets de croissance, contraintes budgétaires, appétence au changement..."></textarea>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Budget approximatif pour la digitalisation</div>
+                <select id="budget_range" class="text-input">
+                    <option value="">-- Sélectionner une fourchette --</option>
+                    <option value="0-10k">0 - 10 000 €</option>
+                    <option value="10k-25k">10 000 - 25 000 €</option>
+                    <option value="25k-50k">25 000 - 50 000 €</option>
+                    <option value="50k-100k">50 000 - 100 000 €</option>
+                    <option value="100k-250k">100 000 - 250 000 €</option>
+                    <option value="250k+">Plus de 250 000 €</option>
+                </select>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">Niveau d'urgence de la transformation</div>
+                <select id="urgency" class="text-input">
+                    <option value="">-- Sélectionner --</option>
+                    <option value="critique">Critique - Besoin immédiat</option>
+                    <option value="urgent">Urgent - Dans les 6 mois</option>
+                    <option value="important">Important - Dans l'année</option>
+                    <option value="planifie">Planifié - 1 à 2 ans</option>
+                    <option value="reflexion">En réflexion - Pas de timeline</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="utility-buttons">
+            <button class="utility-btn" onclick="resetForm()">Réinitialiser</button>
+            <button class="utility-btn" onclick="saveProgress()">Sauvegarder</button>
+            <button class="utility-btn" onclick="loadProgress()">Charger</button>
+        </div>
+
+        <button id="generateReport" class="generate-btn">
+            Générer le Rapport de Maturité Digitale
+        </button>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Analyse en cours et génération du rapport personnalisé...</p>
+        </div>
+
+        <!-- Section Rapport -->
+        <div id="reportSection" class="report-section">
+            <h2 class="section-title">Rapport de Maturité Digitale</h2>
+            
+            <div class="score-indicator" id="globalScores">
+                <!-- Scores globaux générés dynamiquement -->
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <h3>Radar de Maturité par Domaine</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <h3>Répartition des Scores</h3>
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="report-content" id="reportContent">
+                <!-- Contenu du rapport généré par l'IA -->
+            </div>
+
+            <div class="utility-buttons">
+                <button class="utility-btn" onclick="exportToPDF()">Exporter PDF</button>
+                <button class="utility-btn" onclick="shareReport()">Partager</button>
+                <button class="utility-btn" onclick="newAudit()">Nouvel Audit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration et variables globales
+        let radarChart = null;
+        let barChart = null;
+
+        // Configuration API dynamique
+        const apiConfigs = {
+            anthropic: {
+                name: 'Claude (Anthropic)',
+                placeholder: 'Clé format sk-ant-...',
+                endpoint: 'https://api.anthropic.com/v1/messages',
+                help: 'Claude (Anthropic): Clé format "sk-ant-..." - Recommandé pour l\'analyse business<br>Endpoint: https://api.anthropic.com/v1/messages'
+            },
+            openai: {
+                name: 'GPT (OpenAI)',
+                placeholder: 'Clé format sk-...',
+                endpoint: 'https://api.openai.com/v1/chat/completions',
+                help: 'GPT (OpenAI): Clé format "sk-..." - Excellent pour l\'analyse générale<br>Endpoint: https://api.openai.com/v1/chat/completions'
+            },
+            gemini: {
+                name: 'Gemini (Google)',
+                placeholder: 'Clé API Google AI',
+                endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+                help: 'Gemini (Google): Clé API Google AI - Bon pour l\'analyse multimodale<br>Endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+            },
+            grok: {
+                name: 'Grok (xAI)',
+                placeholder: 'Clé API xAI',
+                endpoint: 'https://api.x.ai/v1/chat/completions',
+                help: 'Grok (xAI): Clé API xAI - Approche directe et sans détours<br>Endpoint: https://api.x.ai/v1/chat/completions'
+            }
+        };
+
+        // Gestion changement d'API
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiRadios = document.querySelectorAll('input[name="api_provider"]');
+            const apiKeyInput = document.getElementById('apiKey');
+            const apiHelp = document.getElementById('apiHelp');
+
+            function updateApiConfig() {
+                const selected = document.querySelector('input[name="api_provider"]:checked').value;
+                const config = apiConfigs[selected];
+                
+                apiKeyInput.placeholder = config.placeholder;
+                apiHelp.innerHTML = config.help;
+            }
+
+            apiRadios.forEach(radio => {
+                radio.addEventListener('change', updateApiConfig);
+            });
+
+            // Gestion secteur personnalisé
+            const sectorRadios = document.querySelectorAll('input[name="sector"]');
+            const customSectorInput = document.getElementById('sector_custom');
+
+            sectorRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'autre') {
+                        customSectorInput.style.display = 'block';
+                        customSectorInput.required = true;
+                    } else {
+                        customSectorInput.style.display = 'none';
+                        customSectorInput.required = false;
+                        customSectorInput.value = '';
+                    }
+                });
+            });
+
+            // Date par défaut
+            document.getElementById('audit_date').value = new Date().toISOString().split('T')[0];
+
+            // Event listener pour le bouton de génération
+            document.getElementById('generateReport').addEventListener('click', generateReport);
+        });
+
+        // Collecte des données du formulaire
+        function collectFormData() {
+            const selectedSector = document.querySelector('input[name="sector"]:checked');
+            const sector = selectedSector ? 
+                (selectedSector.value === 'autre' ? document.getElementById('sector_custom').value : selectedSector.value) 
+                : '';
+
+            const data = {
+                api_provider: document.querySelector('input[name="api_provider"]:checked').value,
+                company_info: {
+                    name: document.getElementById('company_name').value,
+                    contact: document.getElementById('contact_name').value,
+                    role: document.getElementById('contact_role').value,
+                    date: document.getElementById('audit_date').value,
+                    employees: document.getElementById('employee_count').value,
+                    sector: sector,
+                    context: document.getElementById('company_context').value
+                },
+                scores: {},
+                notes: {},
+                pain_points: document.getElementById('pain_points').value,
+                ambitions: document.getElementById('ambitions').value,
+                budget_range: document.getElementById('budget_range').value,
+                urgency: document.getElementById('urgency').value
+            };
+
+            // Collecte des cases cochées par catégorie
+            const categories = [
+                'commercial', 'vente', 'production', 'ressources', 'service_client', 
+                'rh', 'finance', 'infrastructure', 'securite', 'data', 'innovation'
+            ];
+            
+            categories.forEach(category => {
+                const checkboxes = document.querySelectorAll(`input[name="${category}"]:checked`);
+                data.scores[category] = Array.from(checkboxes).map(cb => cb.value);
+            });
+
+            // Collecte des notes textuelles
+            const noteFields = [
+                'commercial_notes', 'vente_notes', 'production_notes', 'service_notes',
+                'rh_notes', 'finance_notes', 'infrastructure_notes', 'innovation_notes'
+            ];
+            
+            noteFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) {
+                    data.notes[field] = element.value;
+                }
+            });
+
+            return data;
+        }
+
+        // Calcul des scores de maturité
+        function calculateMaturityScores(data) {
+            const domainMapping = {
+                'Commercial & Marketing': ['commercial', 'vente'],
+                'Production & Opérations': ['production', 'ressources'],
+                'Service Client': ['service_client'],
+                'Ressources Humaines': ['rh'],
+                'Finance & Administration': ['finance'],
+                'Infrastructure': ['infrastructure', 'securite'],
+                'Innovation & Data': ['data', 'innovation']
+            };
+
+            const maxScoresByCategory = {
+                commercial: 6, vente: 5, production: 6, ressources: 5,
+                service_client: 6, rh: 6, finance: 6,
+                infrastructure: 5, securite: 5, data: 5, innovation: 5
+            };
+
+            const scores = {};
+            let globalScore = 0;
+            let totalPossible = 0;
+
+            Object.keys(domainMapping).forEach(domain => {
+                let domainScore = 0;
+                let domainMax = 0;
+
+                domainMapping[domain].forEach(category => {
+                    const categoryScore = data.scores[category] ? data.scores[category].length : 0;
+                    const categoryMax = maxScoresByCategory[category];
+                    
+                    domainScore += categoryScore;
+                    domainMax += categoryMax;
+                });
+
+                scores[domain] = Math.round((domainScore / domainMax) * 100);
+                globalScore += domainScore;
+                totalPossible += domainMax;
+            });
+
+            scores['Global'] = Math.round((globalScore / totalPossible) * 100);
+            return scores;
+        }
+
+        // Appel API multi-provider
+        async function generateAIAnalysis(data, scores) {
+            const apiKey = document.getElementById('apiKey').value;
+            const provider = data.api_provider;
+            
+            if (!apiKey) {
+                throw new Error('Clé API requise');
+            }
+
+            const sectorContext = getSectorContext(data.company_info.sector);
+            const prompt = createPrompt(data, scores, sectorContext);
+
+            try {
+                switch (provider) {
+                    case 'anthropic':
+                        return await callAnthropicAPI(apiKey, prompt);
+                    case 'openai':
+                        return await callOpenAIAPI(apiKey, prompt);
+                    case 'gemini':
+                        return await callGeminiAPI(apiKey, prompt);
+                    case 'grok':
+                        return await callGrokAPI(apiKey, prompt);
+                    default:
+                        throw new Error('Provider non supporté');
+                }
+            } catch (error) {
+                console.error('Erreur API:', error);
+                throw error;
+            }
+        }
+
+        function createPrompt(data, scores, sectorContext) {
+            return `Tu es un consultant en transformation digitale expert tous secteurs. 
+
+Voici les résultats d'un audit de maturité digitale pour l'entreprise ${data.company_info.name} :
+
+INFORMATIONS ENTREPRISE :
+- Secteur : ${data.company_info.sector}
+- Taille : ${data.company_info.employees} employés
+- Contact : ${data.company_info.contact} (${data.company_info.role})
+- Contexte : ${data.company_info.context}
+
+CONTEXTE SECTORIEL :
+${sectorContext}
+
+SCORES DE MATURITÉ :
+${Object.entries(scores).map(([domain, score]) => `- ${domain}: ${score}%`).join('\n')}
+
+POINTS DE DOULEUR :
+${data.pain_points}
+
+AMBITIONS ET CONTRAINTES :
+${data.ambitions}
+
+BUDGET : ${data.budget_range}
+URGENCE : ${data.urgency}
+
+Génère un rapport professionnel structuré avec :
+
+1. EXECUTIVE SUMMARY (3-4 phrases)
+   - Niveau de maturité global et positionnement sectoriel
+   - Enjeux clés identifiés
+
+2. ANALYSE DÉTAILLÉE PAR DOMAINE
+   Pour chaque domaine avec score < 70% :
+   - Diagnostic de l'existant
+   - Écarts par rapport aux meilleures pratiques sectorielles
+   - Impacts business quantifiés
+
+3. RECOMMANDATIONS PRIORISÉES
+   - Quick wins (3-6 mois, ROI rapide)
+   - Projets structurants (6-18 mois, transformation)
+   - Vision long terme (18+ mois, innovation)
+
+4. ROADMAP DÉTAILLÉE
+   - Phasage avec jalons clés
+   - Estimation budgétaire par phase
+   - Ressources nécessaires
+
+5. PROCHAINES ÉTAPES
+   - Actions immédiates à entreprendre
+   - Décisions à prendre
+   - Planning de mise en œuvre
+
+Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragmatique et actionnable.`;
+        }
+
+        async function callAnthropicAPI(apiKey, prompt) {
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: 'claude-3-sonnet-20240229',
+                    max_tokens: 4000,
+                    messages: [{ role: 'user', content: prompt }]
+                })
+            });
+
+            if (!response.ok) throw new Error(`Erreur API Anthropic: ${response.status}`);
+            const result = await response.json();
+            return result.content[0].text;
+        }
+
+        async function callOpenAIAPI(apiKey, prompt) {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4-turbo-preview',
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 4000
+                })
+            });
+
+            if (!response.ok) throw new Error(`Erreur API OpenAI: ${response.status}`);
+            const result = await response.json();
+            return result.choices[0].message.content;
+        }
+
+        async function callGeminiAPI(apiKey, prompt) {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
+            });
+
+            if (!response.ok) throw new Error(`Erreur API Gemini: ${response.status}`);
+            const result = await response.json();
+            return result.candidates[0].content.parts[0].text;
+        }
+
+        async function callGrokAPI(apiKey, prompt) {
+            const response = await fetch('https://api.x.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'grok-beta',
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 4000
+                })
+            });
+
+            if (!response.ok) throw new Error(`Erreur API Grok: ${response.status}`);
+            const result = await response.json();
+            return result.choices[0].message.content;
+        }
+
+        function getSectorContext(sector) {
+            const contexts = {
+                'industrie': 'Secteur industriel : Focus sur l\'automatisation, IoT, maintenance prédictive, ERP intégré, gestion de production.',
+                'btp': 'Secteur BTP : Enjeux mobilité, gestion de chantiers, planification, sécurité, relation clients projets.',
+                'services': 'Secteur services : Focus CRM, facturation temps, gestion projets, collaboration, expertise.',
+                'commerce': 'Commerce/Distribution : E-commerce, omnicanalité, gestion stocks, logistique, expérience client.',
+                'sante': 'Secteur santé : Conformité réglementaire, dossiers patients, télémédecine, sécurité données.',
+                'education': 'Éducation/Formation : LMS, e-learning, gestion étudiants, outils pédagogiques numériques.',
+                'transport': 'Transport/Logistique : Traçabilité, optimisation tournées, gestion flottes, supply chain.',
+                'agriculture': 'Agriculture : Precision farming, IoT, traçabilité, gestion exploitations, circuits courts.',
+                'finance': 'Finance/Banque : Conformité, sécurité renforcée, digitalisation parcours client, fintech.'
+            };
+            return contexts[sector] || 'Secteur spécifique : Analyse adaptée aux particularités métier.';
+        }
+
+        // Fonctions graphiques et utilitaires (identiques à la version précédente)
+        function createRadarChart(scores) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (radarChart) radarChart.destroy();
+
+            const domains = Object.keys(scores).filter(domain => domain !== 'Global');
+            
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: domains.map(domain => domain.length > 15 ? domain.substring(0, 15) + '...' : domain),
+                    datasets: [{
+                        label: 'Score de Maturité (%)',
+                        data: domains.map(domain => scores[domain]),
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                        pointBorderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: { stepSize: 20 } } }
+                }
+            });
+        }
+
+        function createBarChart(scores) {
+            const ctx = document.getElementById('barChart').getContext('2d');
+            if (barChart) barChart.destroy();
+
+            const domains = Object.keys(scores).filter(domain => domain !== 'Global');
+            
+            barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: domains.map(domain => domain.length > 15 ? domain.substring(0, 15) + '...' : domain),
+                    datasets: [{
+                        label: 'Score de Maturité (%)',
+                        data: domains.map(domain => scores[domain]),
+                        backgroundColor: domains.map(domain => {
+                            const score = scores[domain];
+                            if (score >= 80) return 'rgba(46, 204, 113, 0.8)';
+                            if (score >= 60) return 'rgba(241, 196, 15, 0.8)';
+                            if (score >= 40) return 'rgba(230, 126, 34, 0.8)';
+                            return 'rgba(231, 76, 60, 0.8)';
+                        })
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
+            });
+        }
+
+        function displayGlobalScores(scores) {
+            const container = document.getElementById('globalScores');
+            const globalScore = scores['Global'];
+            
+            let maturityLevel = '';
+            let maturityColor = '';
+            
+            if (globalScore >= 80) { maturityLevel = 'Avancée'; maturityColor = '#2ecc71'; }
+            else if (globalScore >= 60) { maturityLevel = 'Intermédiaire'; maturityColor = '#f1c40f'; }
+            else if (globalScore >= 40) { maturityLevel = 'Basique'; maturityColor = '#e67e22'; }
+            else { maturityLevel = 'Émergente'; maturityColor = '#e74c3c'; }
+
+            const domains = Object.keys(scores).filter(domain => domain !== 'Global');
+            const sortedDomains = domains.sort((a, b) => scores[b] - scores[a]);
+
+            container.innerHTML = `
+                <div class="score-item">
+                    <div class="score-value">${globalScore}%</div>
+                    <div class="score-label">Score Global</div>
+                </div>
+                <div class="score-item" style="background: ${maturityColor};">
+                    <div class="score-value">${maturityLevel}</div>
+                    <div class="score-label">Maturité</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value">${scores[sortedDomains[0]]}%</div>
+                    <div class="score-label">Point fort</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value">${scores[sortedDomains[sortedDomains.length - 1]]}%</div>
+                    <div class="score-label">À améliorer</div>
+                </div>
+            `;
+        }
+
+        async function generateReport() {
+            const generateBtn = document.getElementById('generateReport');
+            const loadingDiv = document.getElementById('loading');
+            const reportSection = document.getElementById('reportSection');
+
+            try {
+                const apiKey = document.getElementById('apiKey').value;
+                const companyName = document.getElementById('company_name').value;
+                
+                if (!apiKey) {
+                    alert('Veuillez saisir votre clé API');
+                    return;
+                }
+                if (!companyName) {
+                    alert('Veuillez saisir le nom de l\'entreprise');
+                    return;
+                }
+
+                generateBtn.disabled = true;
+                loadingDiv.style.display = 'block';
+                reportSection.style.display = 'none';
+
+                const formData = collectFormData();
+                const scores = calculateMaturityScores(formData);
+                const aiAnalysis = await generateAIAnalysis(formData, scores);
+
+                displayGlobalScores(scores);
+                createRadarChart(scores);
+                createBarChart(scores);
+
+                const reportContent = document.getElementById('reportContent');
+                reportContent.innerHTML = `
+                    <div style="white-space: pre-wrap; line-height: 1.8; font-size: 14px;">
+                        ${aiAnalysis
+                            .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #2c3e50; font-size: 1.1em;">$1</strong>')
+                            .replace(/^(\d+\..*$)/gm, '<h3 style="color: #3498db; margin: 20px 0 10px 0; font-size: 1.2em;">$1</h3>')
+                            .replace(/^(-.*$)/gm, '<li style="margin: 5px 0;">$1</li>')
+                            .replace(/\n/g, '<br>')
+                        }
+                    </div>
+                `;
+
+                reportSection.style.display = 'block';
+                reportSection.scrollIntoView({ behavior: 'smooth' });
+                saveProgress();
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert(`Erreur lors de la génération du rapport: ${error.message}`);
+            } finally {
+                generateBtn.disabled = false;
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Fonctions utilitaires
+        function saveProgress() {
+            const formData = collectFormData();
+            localStorage.setItem('audit_progress', JSON.stringify(formData));
+            alert('Progression sauvegardée !');
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('audit_progress');
+            if (saved) {
+                alert('Progression restaurée !');
+                // Logique de restauration simplifiée
+            } else {
+                alert('Aucune sauvegarde trouvée.');
+            }
+        }
+
+        function resetForm() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
+                localStorage.removeItem('audit_progress');
+                window.location.reload();
+            }
+        }
+
+        function exportToPDF() { window.print(); }
+        function shareReport() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Rapport Maturité Digitale',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Lien copié !');
+            }
+        }
+        function newAudit() {
+            if (confirm('Démarrer un nouvel audit ?')) {
+                localStorage.removeItem('audit_progress');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

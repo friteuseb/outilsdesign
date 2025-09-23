@@ -55,7 +55,7 @@ $configs = [
             'anthropic-version: 2023-06-01'
         ],
         'body' => [
-            'model' => 'claude-3-sonnet-20240229',
+            'model' => 'claude-3-5-sonnet-20241022',
             'max_tokens' => 4000,
             'messages' => [
                 ['role' => 'user', 'content' => $prompt]
@@ -69,7 +69,7 @@ $configs = [
             'Authorization: Bearer ' . $apiKey
         ],
         'body' => [
-            'model' => 'gpt-4-turbo-preview',
+            'model' => 'gpt-4o',
             'messages' => [
                 ['role' => 'user', 'content' => $prompt]
             ],
@@ -147,6 +147,29 @@ http_response_code($httpCode);
 
 if ($response === false) {
     echo json_encode(['error' => 'Aucune réponse de l\'API']);
+    exit();
+}
+
+// Vérifier les erreurs HTTP avant de parser
+if ($httpCode >= 400) {
+    $responseData = json_decode($response, true);
+
+    // Gérer les erreurs spécifiques des APIs
+    $errorMessage = "Erreur HTTP $httpCode";
+    if ($responseData && isset($responseData['error'])) {
+        if (is_array($responseData['error'])) {
+            $errorMessage .= ": " . ($responseData['error']['message'] ?? $responseData['error']['type'] ?? 'Erreur inconnue');
+        } else {
+            $errorMessage .= ": " . $responseData['error'];
+        }
+    }
+
+    echo json_encode([
+        'error' => $errorMessage,
+        'provider' => $provider,
+        'http_code' => $httpCode,
+        'raw_response' => $responseData
+    ]);
     exit();
 }
 

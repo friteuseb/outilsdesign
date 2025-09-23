@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Système de Scoring</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Test du Nouveau Système de Scoring</h1>
+
+    <div class="test-section">
+        <h3>Test 1: Site Web - Score 0 (Aucun site)</h3>
+        <div class="result" id="test1"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Site Web - Score 0.5 (Site à améliorer)</h3>
+        <div class="result" id="test2"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Site Web - Score 1 (Site optimal)</h3>
+        <div class="result" id="test3"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 4: CRM - Score 0.5 (Outil basique)</h3>
+        <div class="result" id="test4"></div>
+    </div>
+
+    <script>
+        // Copie de la fonction mise à jour
+        function calculateMaturityScores(data) {
+            const domainMapping = {
+                'Commercial & Marketing': ['commercial', 'vente'],
+                'Production & Opérations': ['production', 'ressources'],
+                'Service Client': ['service_client'],
+                'Ressources Humaines': ['rh'],
+                'Finance & Administration': ['finance'],
+                'Infrastructure': ['infrastructure', 'securite'],
+                'Innovation & Data': ['data', 'innovation']
+            };
+
+            const radioQuestionsMapping = {
+                'site_web_pro': 'Commercial & Marketing',
+                'crm_structure': 'Commercial & Marketing',
+                'analytics': 'Commercial & Marketing',
+                'marketing_automation': 'Commercial & Marketing',
+                'logiciel_devis': 'Commercial & Marketing',
+                'suivi_pipeline': 'Commercial & Marketing',
+                'planning_digital': 'Production & Opérations',
+                'gestion_stocks': 'Production & Opérations',
+                'helpdesk': 'Service Client',
+                'portail_client': 'Service Client',
+                'cloud_adoption': 'Infrastructure',
+                'parc_moderne': 'Infrastructure',
+                'erp_integre': 'Finance & Administration',
+                'sauvegarde_auto': 'Infrastructure'
+            };
+
+            const maxScoresByCategory = {
+                commercial: 2, vente: 3, production: 4, ressources: 4,
+                service_client: 4, rh: 6, finance: 5,
+                infrastructure: 3, securite: 4, data: 5, innovation: 5
+            };
+
+            const scores = {};
+            let globalScore = 0;
+            let totalPossible = 0;
+
+            Object.keys(domainMapping).forEach(domain => {
+                let domainScore = 0;
+                let domainMax = 0;
+
+                domainMapping[domain].forEach(category => {
+                    const categoryScore = data.scores[category] ? data.scores[category].length : 0;
+                    const categoryMax = maxScoresByCategory[category];
+                    domainScore += categoryScore;
+                    domainMax += categoryMax;
+                });
+
+                Object.keys(radioQuestionsMapping).forEach(radioQuestion => {
+                    if (radioQuestionsMapping[radioQuestion] === domain) {
+                        const radioScore = data.scores[radioQuestion] ? data.scores[radioQuestion][0] : 0;
+                        domainScore += radioScore;
+                        domainMax += 1;
+                    }
+                });
+
+                scores[domain] = Math.round((domainScore / domainMax) * 100);
+                globalScore += domainScore;
+                totalPossible += domainMax;
+            });
+
+            scores['Global'] = Math.round((globalScore / totalPossible) * 100);
+            return scores;
+        }
+
+        // Tests complets avec tous les nouveaux champs
+        const test1Data = {
+            scores: {
+                site_web_pro: [0], crm_structure: [0], analytics: [0], marketing_automation: [0],
+                commercial: [], vente: []
+            }
+        };
+        const test2Data = {
+            scores: {
+                site_web_pro: [0.5], crm_structure: [0.5], analytics: [0.5], marketing_automation: [0.5],
+                logiciel_devis: [0.5], suivi_pipeline: [0.5],
+                commercial: [], vente: []
+            }
+        };
+        const test3Data = {
+            scores: {
+                site_web_pro: [1], crm_structure: [1], analytics: [1], marketing_automation: [1],
+                logiciel_devis: [1], suivi_pipeline: [1],
+                planning_digital: [1], gestion_stocks: [1],
+                helpdesk: [1], portail_client: [1],
+                cloud_adoption: [1], parc_moderne: [1],
+                erp_integre: [1], sauvegarde_auto: [1],
+                commercial: [], vente: [], production: [], ressources: [],
+                service_client: [], infrastructure: [], securite: [], finance: []
+            }
+        };
+        const test4Data = {
+            scores: {
+                planning_digital: [0.5], gestion_stocks: [0.5],
+                production: [], ressources: []
+            }
+        };
+
+        document.getElementById('test1').innerHTML = JSON.stringify(calculateMaturityScores(test1Data), null, 2);
+        document.getElementById('test2').innerHTML = JSON.stringify(calculateMaturityScores(test2Data), null, 2);
+        document.getElementById('test3').innerHTML = JSON.stringify(calculateMaturityScores(test3Data), null, 2);
+        document.getElementById('test4').innerHTML = JSON.stringify(calculateMaturityScores(test4Data), null, 2);
+
+        console.log('Test 1 (Site score 0):', calculateMaturityScores(test1Data));
+        console.log('Test 2 (Site score 0.5):', calculateMaturityScores(test2Data));
+        console.log('Test 3 (Site score 1):', calculateMaturityScores(test3Data));
+        console.log('Test 4 (CRM score 0.5):', calculateMaturityScores(test4Data));
+    </script>
+</body>
+</html>

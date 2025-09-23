@@ -102,6 +102,57 @@
             transform: scale(1.2);
         }
 
+        .radio-group-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e3f2fd;
+        }
+
+        .question-sub-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .radio-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .radio-option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.1);
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            font-weight: 600;
+        }
+
+        .radio-option:has(input[type="radio"]:checked) {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+
         .text-input {
             width: 100%;
             padding: 12px;
@@ -490,24 +541,80 @@
             <div class="question-group">
                 <div class="question-title">Gestion clients et prospects</div>
                 <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="commercial" value="crm_structure"> CRM ou base clients structurée
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">CRM ou base clients structurée</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="crm_structure" value="0">
+                                <span class="radio-label">❌ Contacts gérés manuellement (Excel, carnet)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="crm_structure" value="0.5">
+                                <span class="radio-label">⚠️ Outil basique de gestion contacts</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="crm_structure" value="1">
+                                <span class="radio-label">✅ CRM complet avec historique et automation</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="commercial" value="prospection_digitale"> Prospection digitale (emails, réseaux sociaux)
                     </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="commercial" value="site_web_pro"> Site web professionnel et optimisé
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Site web professionnel et optimisé</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="site_web_pro" value="0">
+                                <span class="radio-label">❌ Aucun site ou site vitrine basique</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="site_web_pro" value="0.5">
+                                <span class="radio-label">⚠️ Site existant mais à moderniser</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="site_web_pro" value="1">
+                                <span class="radio-label">✅ Site professionnel optimisé (SEO, responsive)</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="commercial" value="reseaux_sociaux"> Présence active sur réseaux sociaux
                     </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="commercial" value="marketing_automation"> Marketing automation/email campaigns
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="commercial" value="analytics"> Analytics et mesure de performance
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Marketing automation/email campaigns</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="marketing_automation" value="0">
+                                <span class="radio-label">Emails manuels occasionnels</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="marketing_automation" value="0.5">
+                                <span class="radio-label">Newsletter simple avec outil basique</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="marketing_automation" value="1">
+                                <span class="radio-label">Scénarios automatisés et segmentation avancée</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Analytics et mesure de performance</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="analytics" value="0">
+                                <span class="radio-label">Aucun suivi des performances web</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="analytics" value="0.5">
+                                <span class="radio-label">Google Analytics basique installé</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="analytics" value="1">
+                                <span class="radio-label">Analytics avancés avec segmentation et tableaux de bord</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <textarea id="commercial_notes" class="text-input textarea" placeholder="Observations spécifiques sur les processus commerciaux et marketing..."></textarea>
             </div>
@@ -515,18 +622,46 @@
             <div class="question-group">
                 <div class="question-title">Processus de vente et devis</div>
                 <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="vente" value="logiciel_devis"> Logiciel de devis/facturation dédié
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Logiciel de devis/facturation dédié</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="logiciel_devis" value="0">
+                                <span class="radio-label">Devis/factures sur Excel ou Word</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="logiciel_devis" value="0.5">
+                                <span class="radio-label">Logiciel comptable simple</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="logiciel_devis" value="1">
+                                <span class="radio-label">ERP intégré avec workflow automatisé</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="vente" value="configurateur"> Configurateur produits/services en ligne
                     </label>
                     <label class="checkbox-item">
                         <input type="checkbox" name="vente" value="signature_electronique"> Signature électronique des contrats
                     </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="vente" value="suivi_pipeline"> Suivi pipeline commercial structuré
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Suivi pipeline commercial structuré</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="suivi_pipeline" value="0">
+                                <span class="radio-label">Suivi informel ou mental</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="suivi_pipeline" value="0.5">
+                                <span class="radio-label">Tableau Excel ou outil simple</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="suivi_pipeline" value="1">
+                                <span class="radio-label">CRM avec scoring et automatisation</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="vente" value="reporting_commercial"> Reporting commercial automatisé
                     </label>
@@ -542,9 +677,23 @@
             <div class="question-group">
                 <div class="question-title">Planification et suivi</div>
                 <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="production" value="planning_digital"> Planning de production digital
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Planning de production digital</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="planning_digital" value="0">
+                                <span class="radio-label">Planning papier ou mental</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="planning_digital" value="0.5">
+                                <span class="radio-label">Excel partagé ou outil basique</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="planning_digital" value="1">
+                                <span class="radio-label">Logiciel MRP spécialisé avec optimisation</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="production" value="suivi_temps_reel"> Suivi de production en temps réel
                     </label>
@@ -567,9 +716,23 @@
             <div class="question-group">
                 <div class="question-title">Gestion des ressources</div>
                 <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="ressources" value="gestion_stocks"> Gestion informatisée des stocks
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Gestion informatisée des stocks</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="gestion_stocks" value="0">
+                                <span class="radio-label">Inventaire manuel ou carnet</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="gestion_stocks" value="0.5">
+                                <span class="radio-label">Tableur avec suivi basic</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="gestion_stocks" value="1">
+                                <span class="radio-label">Système temps réel avec alertes automatiques</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="ressources" value="codes_barres"> Codes-barres ou puces RFID
                     </label>
@@ -593,12 +756,40 @@
             <div class="question-group">
                 <div class="question-title">Gestion de la relation client</div>
                 <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service_client" value="helpdesk"> Système de helpdesk/ticketing
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service_client" value="portail_client"> Portail client en ligne
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Système de helpdesk/ticketing</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="helpdesk" value="0">
+                                <span class="radio-label">Support par email simple</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="helpdesk" value="0.5">
+                                <span class="radio-label">Outil basique de tickets</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="helpdesk" value="1">
+                                <span class="radio-label">Plateforme complète avec SLA et escalade</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Portail client en ligne</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="portail_client" value="0">
+                                <span class="radio-label">Aucun portail client</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="portail_client" value="0.5">
+                                <span class="radio-label">Page web statique avec infos basiques</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="portail_client" value="1">
+                                <span class="radio-label">Espace interactif avec historique et documents</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="service_client" value="chat_support"> Chat en ligne ou chatbot
                     </label>
@@ -653,9 +844,23 @@
             <div class="question-group">
                 <div class="question-title">Gestion financière et administrative</div>
                 <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="finance" value="erp_integre"> ERP intégré complet
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">ERP intégré complet</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="erp_integre" value="0">
+                                <span class="radio-label">Logiciel comptable simple</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="erp_integre" value="0.5">
+                                <span class="radio-label">Logiciels métier séparés</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="erp_integre" value="1">
+                                <span class="radio-label">ERP avec modules interconnectés</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="finance" value="facturation_electronique"> Facturation électronique
                     </label>
@@ -683,12 +888,40 @@
             <div class="question-group">
                 <div class="question-title">Infrastructure technique</div>
                 <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="infrastructure" value="cloud_adoption"> Adoption du cloud
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="infrastructure" value="parc_moderne"> Parc informatique moderne
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Adoption du cloud</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="cloud_adoption" value="0">
+                                <span class="radio-label">Serveurs sur site uniquement</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="cloud_adoption" value="0.5">
+                                <span class="radio-label">Quelques services cloud (emails, stockage)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="cloud_adoption" value="1">
+                                <span class="radio-label">Stratégie hybride complète avec gouvernance</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Parc informatique moderne</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="parc_moderne" value="0">
+                                <span class="radio-label">Équipements obsolètes ou hétérogènes</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="parc_moderne" value="0.5">
+                                <span class="radio-label">Matériel récent mais non standardisé</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="parc_moderne" value="1">
+                                <span class="radio-label">Infrastructure moderne optimisée et standardisée</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="infrastructure" value="reseau_performant"> Infrastructure réseau performante
                     </label>
@@ -707,9 +940,23 @@
                     <label class="checkbox-item">
                         <input type="checkbox" name="securite" value="cybersecurite"> Stratégie cybersécurité avancée
                     </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="securite" value="sauvegarde_auto"> Sauvegarde automatisée
-                    </label>
+                    <div class="radio-group-item">
+                        <div class="question-sub-title">Sauvegarde automatisée</div>
+                        <div class="radio-options">
+                            <label class="radio-option">
+                                <input type="radio" name="sauvegarde_auto" value="0">
+                                <span class="radio-label">Sauvegarde manuelle occasionnelle</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sauvegarde_auto" value="0.5">
+                                <span class="radio-label">Sauvegarde automatique basique</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sauvegarde_auto" value="1">
+                                <span class="radio-label">Système complet avec tests de restauration</span>
+                            </label>
+                        </div>
+                    </div>
                     <label class="checkbox-item">
                         <input type="checkbox" name="securite" value="rgpd_compliance"> Conformité RGPD
                     </label>
@@ -884,33 +1131,44 @@
             // Configuration API (optionnelle pour la démo)
             document.querySelector('input[name="api_provider"][value="anthropic"]').checked = true;
 
-            // Commercial & Marketing
-            document.querySelector('input[name="commercial"][value="crm_structure"]').checked = true;
-            document.querySelector('input[name="commercial"][value="site_web_pro"]').checked = true;
-            document.querySelector('input[name="commercial"][value="marketing_automation"]').checked = true;
-            document.querySelector('input[name="commercial"][value="analytics"]').checked = true;
+            // Commercial & Marketing - nouveaux champs radio
+            document.querySelector('input[name="crm_structure"][value="0.5"]').checked = true;
+            document.querySelector('input[name="site_web_pro"][value="1"]').checked = true;
+            document.querySelector('input[name="marketing_automation"][value="0.5"]').checked = true;
+            document.querySelector('input[name="analytics"][value="0.5"]').checked = true;
+            // Champs checkboxes restants
+            document.querySelector('input[name="commercial"][value="prospection_digitale"]').checked = true;
+            document.querySelector('input[name="commercial"][value="reseaux_sociaux"]').checked = true;
             document.getElementById('commercial_notes').value = 'L\'entreprise utilise un CRM basique et a un site web professionnel. Cependant, les processus de marketing automation et d\'analytics sont encore limités.';
 
-            // Vente
-            document.querySelector('input[name="vente"][value="logiciel_devis"]').checked = true;
+            // Vente - nouveaux champs radio
+            document.querySelector('input[name="logiciel_devis"][value="1"]').checked = true;
+            document.querySelector('input[name="suivi_pipeline"][value="0.5"]').checked = true;
+            // Champs checkboxes restants
             document.querySelector('input[name="vente"][value="signature_electronique"]').checked = true;
-            document.querySelector('input[name="vente"][value="suivi_pipeline"]').checked = true;
+            document.querySelector('input[name="vente"][value="configurateur"]').checked = true;
+            document.querySelector('input[name="vente"][value="reporting_commercial"]').checked = true;
             document.getElementById('vente_notes').value = 'Processus de vente structuré avec devis automatisés et signature électronique. Le suivi du pipeline commercial pourrait être amélioré.';
 
-            // Production & Opérations
-            document.querySelector('input[name="production"][value="planning_digital"]').checked = true;
+            // Production & Opérations - nouveaux champs radio
+            document.querySelector('input[name="planning_digital"][value="1"]').checked = true;
+            document.querySelector('input[name="gestion_stocks"][value="0.5"]').checked = true;
+            // Champs checkboxes restants
             document.querySelector('input[name="production"][value="suivi_temps_reel"]').checked = true;
             document.querySelector('input[name="production"][value="gestion_priorites"]').checked = true;
             document.querySelector('input[name="production"][value="kpi_dashboards"]').checked = true;
-            document.querySelector('input[name="ressources"][value="gestion_stocks"]').checked = true;
             document.querySelector('input[name="ressources"][value="codes_barres"]').checked = true;
+            document.querySelector('input[name="ressources"][value="approvisionnement_auto"]').checked = true;
             document.getElementById('production_notes').value = 'L\'équipe utilise des outils de gestion de projet modernes mais la planification opérationnelle pourrait être optimisée avec des tableaux de bord plus avancés.';
 
-            // Service Client
-            document.querySelector('input[name="service_client"][value="helpdesk"]').checked = true;
-            document.querySelector('input[name="service_client"][value="portail_client"]').checked = true;
+            // Service Client - nouveaux champs radio
+            document.querySelector('input[name="helpdesk"][value="1"]').checked = true;
+            document.querySelector('input[name="portail_client"][value="0.5"]').checked = true;
+            // Champs checkboxes restants
             document.querySelector('input[name="service_client"][value="chat_support"]').checked = true;
             document.querySelector('input[name="service_client"][value="knowledge_base"]').checked = true;
+            document.querySelector('input[name="service_client"][value="satisfaction_mesure"]').checked = true;
+            document.querySelector('input[name="service_client"][value="multi_canal"]').checked = true;
             document.getElementById('service_notes').value = 'Support client organisé avec helpdesk et portail client. L\'expérience pourrait être enrichie avec un chatbot et une base de connaissances plus complète.';
 
             // RH
@@ -920,21 +1178,26 @@
             document.querySelector('input[name="rh"][value="collaboration_tools"]').checked = true;
             document.getElementById('rh_notes').value = 'SIRH en place avec planning digital et outils collaboratifs. La formation e-learning est utilisée mais pourrait être étendue.';
 
-            // Finance & Admin
-            document.querySelector('input[name="finance"][value="erp_integre"]').checked = true;
+            // Finance & Admin - nouveaux champs radio
+            document.querySelector('input[name="erp_integre"][value="0.5"]').checked = true;
+            // Champs checkboxes restants
             document.querySelector('input[name="finance"][value="facturation_electronique"]').checked = true;
             document.querySelector('input[name="finance"][value="reporting_financier"]').checked = true;
             document.querySelector('input[name="finance"][value="dematerialisation"]').checked = true;
+            document.querySelector('input[name="finance"][value="tresorerie_temps_reel"]').checked = true;
             document.getElementById('finance_notes').value = 'ERP intégré avec facturation électronique et dématérialisation administrative. Le reporting financier est automatisé.';
 
-            // Infrastructure
-            document.querySelector('input[name="infrastructure"][value="cloud_adoption"]').checked = true;
-            document.querySelector('input[name="infrastructure"][value="parc_moderne"]').checked = true;
+            // Infrastructure - nouveaux champs radio
+            document.querySelector('input[name="cloud_adoption"][value="1"]').checked = true;
+            document.querySelector('input[name="parc_moderne"][value="0.5"]').checked = true;
+            document.querySelector('input[name="sauvegarde_auto"][value="1"]').checked = true;
+            // Champs checkboxes restants
             document.querySelector('input[name="infrastructure"][value="reseau_performant"]').checked = true;
             document.querySelector('input[name="infrastructure"][value="integration_api"]').checked = true;
+            document.querySelector('input[name="infrastructure"][value="mobilite"]').checked = true;
             document.querySelector('input[name="securite"][value="cybersecurite"]').checked = true;
-            document.querySelector('input[name="securite"][value="sauvegarde_auto"]').checked = true;
             document.querySelector('input[name="securite"][value="rgpd_compliance"]').checked = true;
+            document.querySelector('input[name="securite"][value="plan_continuite"]').checked = true;
             document.getElementById('infrastructure_notes').value = 'Infrastructure cloud moderne avec sécurité avancée. Bonne conformité RGPD et sauvegardes automatiques.';
 
             // Innovation & Data
@@ -1146,13 +1409,27 @@
 
             // Collecte des cases cochées par catégorie
             const categories = [
-                'commercial', 'vente', 'production', 'ressources', 'service_client', 
+                'commercial', 'vente', 'production', 'ressources', 'service_client',
                 'rh', 'finance', 'infrastructure', 'securite', 'data', 'innovation'
             ];
-            
+
             categories.forEach(category => {
                 const checkboxes = document.querySelectorAll(`input[name="${category}"]:checked`);
                 data.scores[category] = Array.from(checkboxes).map(cb => cb.value);
+            });
+
+            // Collecte des questions à niveaux (radio buttons)
+            const radioQuestions = [
+                'site_web_pro', 'crm_structure', 'analytics', 'marketing_automation',
+                'logiciel_devis', 'suivi_pipeline', 'planning_digital', 'gestion_stocks',
+                'helpdesk', 'portail_client', 'cloud_adoption', 'parc_moderne',
+                'erp_integre', 'sauvegarde_auto'
+            ];
+            radioQuestions.forEach(question => {
+                const radioSelected = document.querySelector(`input[name="${question}"]:checked`);
+                if (radioSelected) {
+                    data.scores[question] = [parseFloat(radioSelected.value)];
+                }
             });
 
             // Collecte des notes textuelles
@@ -1183,10 +1460,28 @@
                 'Innovation & Data': ['data', 'innovation']
             };
 
+            // Mapping des questions radio vers leurs domaines
+            const radioQuestionsMapping = {
+                'site_web_pro': 'Commercial & Marketing',
+                'crm_structure': 'Commercial & Marketing',
+                'analytics': 'Commercial & Marketing',
+                'marketing_automation': 'Commercial & Marketing',
+                'logiciel_devis': 'Commercial & Marketing',
+                'suivi_pipeline': 'Commercial & Marketing',
+                'planning_digital': 'Production & Opérations',
+                'gestion_stocks': 'Production & Opérations',
+                'helpdesk': 'Service Client',
+                'portail_client': 'Service Client',
+                'cloud_adoption': 'Infrastructure',
+                'parc_moderne': 'Infrastructure',
+                'erp_integre': 'Finance & Administration',
+                'sauvegarde_auto': 'Infrastructure'
+            };
+
             const maxScoresByCategory = {
-                commercial: 6, vente: 5, production: 6, ressources: 5,
-                service_client: 6, rh: 6, finance: 6,
-                infrastructure: 5, securite: 5, data: 5, innovation: 5
+                commercial: 2, vente: 3, production: 4, ressources: 4, // Ajustés avec les questions radio
+                service_client: 4, rh: 6, finance: 5,
+                infrastructure: 3, securite: 4, data: 5, innovation: 5
             };
 
             const scores = {};
@@ -1198,11 +1493,21 @@
                 let domainMax = 0;
 
                 domainMapping[domain].forEach(category => {
+                    // Score des checkboxes traditionnelles
                     const categoryScore = data.scores[category] ? data.scores[category].length : 0;
                     const categoryMax = maxScoresByCategory[category];
-                    
+
                     domainScore += categoryScore;
                     domainMax += categoryMax;
+                });
+
+                // Ajout des scores des questions radio pour ce domaine
+                Object.keys(radioQuestionsMapping).forEach(radioQuestion => {
+                    if (radioQuestionsMapping[radioQuestion] === domain) {
+                        const radioScore = data.scores[radioQuestion] ? data.scores[radioQuestion][0] : 0;
+                        domainScore += radioScore;
+                        domainMax += 1; // chaque question radio vaut max 1 point
+                    }
                 });
 
                 scores[domain] = Math.round((domainScore / domainMax) * 100);
@@ -2068,99 +2373,7 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
             }
         }
 
-        function loadDemoData() {
-            if (!confirm('Cette action va remplir le formulaire avec des données de démonstration.\n\nVoulez-vous continuer ?')) {
-                return;
-            }
 
-            // Informations générales
-            document.getElementById('company_name').value = 'TechSolutions SARL';
-            document.getElementById('contact_name').value = 'Marie Dupont';
-            document.getElementById('contact_role').value = 'Directrice Générale';
-            document.getElementById('audit_date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('employee_count').value = '45';
-            document.getElementById('company_context').value = 'TechSolutions est une entreprise de services informatiques spécialisée dans le développement d\'applications web et mobiles. Créée il y a 8 ans, elle compte 45 employés et réalise un chiffre d\'affaires de 4,2M€. L\'entreprise opère principalement en France avec quelques clients internationaux.';
-
-            // Sélection secteur
-            document.querySelector('input[name="sector"][value="services"]').checked = true;
-
-            // Configuration API (optionnelle pour la démo)
-            document.querySelector('input[name="api_provider"][value="anthropic"]').checked = true;
-
-            // Commercial & Marketing
-            document.querySelector('input[name="commercial"][value="crm_structure"]').checked = true;
-            document.querySelector('input[name="commercial"][value="site_web_pro"]').checked = true;
-            document.querySelector('input[name="commercial"][value="marketing_automation"]').checked = true;
-            document.querySelector('input[name="commercial"][value="analytics"]').checked = true;
-            document.getElementById('commercial_notes').value = 'L\'entreprise utilise un CRM basique et a un site web professionnel. Cependant, les processus de marketing automation et d\'analytics sont encore limités.';
-
-            // Vente
-            document.querySelector('input[name="vente"][value="logiciel_devis"]').checked = true;
-            document.querySelector('input[name="vente"][value="signature_electronique"]').checked = true;
-            document.querySelector('input[name="vente"][value="suivi_pipeline"]').checked = true;
-            document.getElementById('vente_notes').value = 'Processus de vente structuré avec devis automatisés et signature électronique. Le suivi du pipeline commercial pourrait être amélioré.';
-
-            // Production & Opérations
-            document.querySelector('input[name="production"][value="planning_digital"]').checked = true;
-            document.querySelector('input[name="production"][value="suivi_temps_reel"]').checked = true;
-            document.querySelector('input[name="production"][value="gestion_priorites"]').checked = true;
-            document.querySelector('input[name="production"][value="kpi_dashboards"]').checked = true;
-            document.querySelector('input[name="ressources"][value="gestion_stocks"]').checked = true;
-            document.querySelector('input[name="ressources"][value="codes_barres"]').checked = true;
-            document.getElementById('production_notes').value = 'L\'équipe utilise des outils de gestion de projet modernes mais la planification opérationnelle pourrait être optimisée avec des tableaux de bord plus avancés.';
-
-            // Service Client
-            document.querySelector('input[name="service_client"][value="helpdesk"]').checked = true;
-            document.querySelector('input[name="service_client"][value="portail_client"]').checked = true;
-            document.querySelector('input[name="service_client"][value="chat_support"]').checked = true;
-            document.querySelector('input[name="service_client"][value="knowledge_base"]').checked = true;
-            document.getElementById('service_notes').value = 'Support client organisé avec helpdesk et portail client. L\'expérience pourrait être enrichie avec un chatbot et une base de connaissances plus complète.';
-
-            // RH
-            document.querySelector('input[name="rh"][value="sirh"]').checked = true;
-            document.querySelector('input[name="rh"][value="planning_equipes"]').checked = true;
-            document.querySelector('input[name="rh"][value="formation_elearning"]').checked = true;
-            document.querySelector('input[name="rh"][value="collaboration_tools"]').checked = true;
-            document.getElementById('rh_notes').value = 'SIRH en place avec planning digital et outils collaboratifs. La formation e-learning est utilisée mais pourrait être étendue.';
-
-            // Finance & Admin
-            document.querySelector('input[name="finance"][value="erp_integre"]').checked = true;
-            document.querySelector('input[name="finance"][value="facturation_electronique"]').checked = true;
-            document.querySelector('input[name="finance"][value="reporting_financier"]').checked = true;
-            document.querySelector('input[name="finance"][value="dematerialisation"]').checked = true;
-            document.getElementById('finance_notes').value = 'ERP intégré avec facturation électronique et dématérialisation administrative. Le reporting financier est automatisé.';
-
-            // Infrastructure
-            document.querySelector('input[name="infrastructure"][value="cloud_adoption"]').checked = true;
-            document.querySelector('input[name="infrastructure"][value="parc_moderne"]').checked = true;
-            document.querySelector('input[name="infrastructure"][value="reseau_performant"]').checked = true;
-            document.querySelector('input[name="infrastructure"][value="integration_api"]').checked = true;
-            document.querySelector('input[name="securite"][value="cybersecurite"]').checked = true;
-            document.querySelector('input[name="securite"][value="sauvegarde_auto"]').checked = true;
-            document.querySelector('input[name="securite"][value="rgpd_compliance"]').checked = true;
-            document.getElementById('infrastructure_notes').value = 'Infrastructure cloud moderne avec sécurité avancée. Bonne conformité RGPD et sauvegardes automatiques.';
-
-            // Innovation & Data
-            document.querySelector('input[name="data"][value="business_intelligence"]').checked = true;
-            document.querySelector('input[name="data"][value="data_analytics"]').checked = true;
-            document.querySelector('input[name="data"][value="data_governance"]').checked = true;
-            document.querySelector('input[name="innovation"][value="veille_techno"]').checked = true;
-            document.querySelector('input[name="innovation"][value="roadmap_digitale"]').checked = true;
-            document.getElementById('innovation_notes').value = 'Business Intelligence en place avec analytics avancés. Veille technologique organisée et roadmap digitale définie.';
-
-            // Synthèse
-            document.getElementById('pain_points').value = 'Difficultés de recrutement de profils techniques, concurrence accrue sur le marché, besoin d\'accélérer la transformation digitale pour rester compétitif.';
-            document.getElementById('ambitions').value = 'Croissance de 30% en 2 ans, diversification vers de nouveaux secteurs, amélioration de la productivité de 25%, développement de l\'innovation produit.';
-            document.getElementById('budget_range').value = '50k-100k';
-            document.getElementById('urgency').value = 'important';
-
-            // Sauvegarde automatique
-            saveProgress();
-
-            alert('✅ Données de démonstration chargées !\n\nVous pouvez maintenant générer le rapport pour voir le résultat.');
-        }
-
-        
         function resetForm() {
             if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
                 const keepApiKey = confirm('Voulez-vous conserver la clé API sauvegardée ?');

@@ -386,14 +386,19 @@
                 </label>
             </div>
 
-            <input type="password" id="apiKey" class="text-input" placeholder="Clé API" style="margin-bottom: 10px;">
+            <div style="position: relative;">
+                <input type="password" id="apiKey" class="text-input" placeholder="Clé API" style="margin-bottom: 10px; padding-right: 120px;">
+                <button id="saveApiKeyBtn" onclick="saveApiKey()" class="utility-btn" style="position: absolute; right: 5px; top: 5px; background: #27ae60; padding: 5px 10px; font-size: 0.8em;">💾 Sauver</button>
+            </div>
             
             <div class="api-help" id="apiHelp">
                 <strong>Claude (Anthropic):</strong> Clé format "sk-ant-..." - Recommandé pour l'analyse business<br>
                 <strong>Endpoint:</strong> https://api.anthropic.com/v1/messages
             </div>
             
-            <p style="font-size: 0.9em; color: #856404; margin-top: 10px;">Votre clé API ne sera pas stockée et restera confidentielle</p>
+            <div style="font-size: 0.9em; color: #856404; margin-top: 10px;">
+                <p id="apiSecurityInfo">🔒 Clé API sauvegardée localement dans votre navigateur - <button onclick="clearSavedApiKey()" style="background: #e74c3c; color: white; border: none; padding: 2px 8px; border-radius: 3px; font-size: 0.8em; cursor: pointer;">Effacer</button></p>
+            </div>
         </div>
 
         <!-- Sélection du secteur -->
@@ -955,6 +960,79 @@
             }
         };
 
+        // Fonctions de gestion des clés API
+        function saveApiKey() {
+            const apiKey = document.getElementById('apiKey').value;
+            const provider = document.querySelector('input[name="api_provider"]:checked').value;
+
+            if (!apiKey.trim()) {
+                alert('Veuillez saisir une clé API avant de sauvegarder.');
+                return;
+            }
+
+            const apiData = {
+                key: apiKey,
+                provider: provider,
+                timestamp: Date.now()
+            };
+
+            localStorage.setItem('saved_api_key', JSON.stringify(apiData));
+            updateApiSecurityInfo(true);
+
+            // Animation de confirmation
+            const saveBtn = document.getElementById('saveApiKeyBtn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '✓ Sauvegardé';
+            saveBtn.style.background = '#27ae60';
+
+            setTimeout(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.style.background = '#27ae60';
+            }, 2000);
+        }
+
+        function loadSavedApiKey() {
+            const saved = localStorage.getItem('saved_api_key');
+            if (saved) {
+                try {
+                    const apiData = JSON.parse(saved);
+                    document.getElementById('apiKey').value = apiData.key;
+
+                    // Restaurer le provider sélectionné
+                    const providerRadio = document.querySelector(`input[name="api_provider"][value="${apiData.provider}"]`);
+                    if (providerRadio) {
+                        providerRadio.checked = true;
+                        updateApiConfig();
+                    }
+
+                    updateApiSecurityInfo(true);
+                } catch (e) {
+                    console.error('Erreur lors de la restauration de la clé API:', e);
+                    localStorage.removeItem('saved_api_key');
+                }
+            } else {
+                updateApiSecurityInfo(false);
+            }
+        }
+
+        function clearSavedApiKey() {
+            if (confirm('Voulez-vous effacer la clé API sauvegardée ?\n\nVous devrez la ressaisir lors de votre prochaine visite.')) {
+                localStorage.removeItem('saved_api_key');
+                document.getElementById('apiKey').value = '';
+                updateApiSecurityInfo(false);
+                alert('Clé API effacée.');
+            }
+        }
+
+        function updateApiSecurityInfo(isSaved) {
+            const infoElement = document.getElementById('apiSecurityInfo');
+            if (isSaved) {
+                infoElement.innerHTML = '🔒 Clé API sauvegardée localement dans votre navigateur - <button onclick="clearSavedApiKey()" style="background: #e74c3c; color: white; border: none; padding: 2px 8px; border-radius: 3px; font-size: 0.8em; cursor: pointer;">Effacer</button>';
+            } else {
+                infoElement.innerHTML = '🔓 Clé API non sauvegardée - Cliquez sur "Sauver" pour la mémoriser';
+            }
+        }
+
         // Gestion changement d'API
         document.addEventListener('DOMContentLoaded', function() {
             const apiRadios = document.querySelectorAll('input[name="api_provider"]');
@@ -964,13 +1042,31 @@
             function updateApiConfig() {
                 const selected = document.querySelector('input[name="api_provider"]:checked').value;
                 const config = apiConfigs[selected];
-                
+
                 apiKeyInput.placeholder = config.placeholder;
                 apiHelp.innerHTML = config.help;
             }
 
+            // Charger la clé API sauvegardée au chargement de la page
+            loadSavedApiKey();
+
             apiRadios.forEach(radio => {
                 radio.addEventListener('change', updateApiConfig);
+            });
+
+            // Sauvegarder automatiquement quand on tape dans le champ (avec délai)
+            let saveTimeout;
+            apiKeyInput.addEventListener('input', function() {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    if (apiKeyInput.value.trim().length > 10) { // Seulement si ça ressemble à une vraie clé
+                        const currentSaved = localStorage.getItem('saved_api_key');
+                        if (currentSaved) {
+                            // Mise à jour automatique si déjà une clé sauvegardée
+                            saveApiKey();
+                        }
+                    }
+                }, 1500); // Attendre 1.5 secondes après la dernière frappe
             });
 
             // Gestion secteur personnalisé
@@ -1893,7 +1989,12 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
         
         function resetForm() {
             if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
+                const keepApiKey = confirm('Voulez-vous conserver la clé API sauvegardée ?');
+
                 localStorage.removeItem('audit_progress');
+                if (!keepApiKey) {
+                    localStorage.removeItem('saved_api_key');
+                }
                 window.location.reload();
             }
         }
@@ -1912,7 +2013,12 @@ Adapte le vocabulaire et les recommandations au secteur spécifique. Reste pragm
         }
         function newAudit() {
             if (confirm('Démarrer un nouvel audit ?')) {
+                const keepApiKey = confirm('Voulez-vous conserver la clé API sauvegardée ?');
+
                 localStorage.removeItem('audit_progress');
+                if (!keepApiKey) {
+                    localStorage.removeItem('saved_api_key');
+                }
                 window.location.reload();
             }
         }

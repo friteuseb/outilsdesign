@@ -835,6 +835,98 @@
         let radarChart = null;
         let barChart = null;
 
+        function loadDemoData() {
+            if (!confirm('Cette action va remplir le formulaire avec des données de démonstration.\n\nVoulez-vous continuer ?')) {
+                return;
+            }
+
+            // Informations générales
+            document.getElementById('company_name').value = 'TechSolutions SARL';
+            document.getElementById('contact_name').value = 'Marie Dupont';
+            document.getElementById('contact_role').value = 'Directrice Générale';
+            document.getElementById('audit_date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('employee_count').value = '45';
+            document.getElementById('company_context').value = 'TechSolutions est une entreprise de services informatiques spécialisée dans le développement d\'applications web et mobiles. Créée il y a 8 ans, elle compte 45 employés et réalise un chiffre d\'affaires de 4,2M€. L\'entreprise opère principalement en France avec quelques clients internationaux.';
+
+            // Sélection secteur
+            document.querySelector('input[name="sector"][value="services"]').checked = true;
+
+            // Configuration API (optionnelle pour la démo)
+            document.querySelector('input[name="api_provider"][value="anthropic"]').checked = true;
+
+            // Commercial & Marketing
+            document.querySelector('input[name="commercial"][value="crm_structure"]').checked = true;
+            document.querySelector('input[name="commercial"][value="site_web_pro"]').checked = true;
+            document.querySelector('input[name="commercial"][value="marketing_automation"]').checked = true;
+            document.querySelector('input[name="commercial"][value="analytics"]').checked = true;
+            document.getElementById('commercial_notes').value = 'L\'entreprise utilise un CRM basique et a un site web professionnel. Cependant, les processus de marketing automation et d\'analytics sont encore limités.';
+
+            // Vente
+            document.querySelector('input[name="vente"][value="logiciel_devis"]').checked = true;
+            document.querySelector('input[name="vente"][value="signature_electronique"]').checked = true;
+            document.querySelector('input[name="vente"][value="suivi_pipeline"]').checked = true;
+            document.getElementById('vente_notes').value = 'Processus de vente structuré avec devis automatisés et signature électronique. Le suivi du pipeline commercial pourrait être amélioré.';
+
+            // Production & Opérations
+            document.querySelector('input[name="production"][value="planning_digital"]').checked = true;
+            document.querySelector('input[name="production"][value="suivi_temps_reel"]').checked = true;
+            document.querySelector('input[name="production"][value="gestion_priorites"]').checked = true;
+            document.querySelector('input[name="production"][value="kpi_dashboards"]').checked = true;
+            document.querySelector('input[name="ressources"][value="gestion_stocks"]').checked = true;
+            document.querySelector('input[name="ressources"][value="codes_barres"]').checked = true;
+            document.getElementById('production_notes').value = 'L\'équipe utilise des outils de gestion de projet modernes mais la planification opérationnelle pourrait être optimisée avec des tableaux de bord plus avancés.';
+
+            // Service Client
+            document.querySelector('input[name="service_client"][value="helpdesk"]').checked = true;
+            document.querySelector('input[name="service_client"][value="portail_client"]').checked = true;
+            document.querySelector('input[name="service_client"][value="chat_support"]').checked = true;
+            document.querySelector('input[name="service_client"][value="knowledge_base"]').checked = true;
+            document.getElementById('service_notes').value = 'Support client organisé avec helpdesk et portail client. L\'expérience pourrait être enrichie avec un chatbot et une base de connaissances plus complète.';
+
+            // RH
+            document.querySelector('input[name="rh"][value="sirh"]').checked = true;
+            document.querySelector('input[name="rh"][value="planning_equipes"]').checked = true;
+            document.querySelector('input[name="rh"][value="formation_elearning"]').checked = true;
+            document.querySelector('input[name="rh"][value="collaboration_tools"]').checked = true;
+            document.getElementById('rh_notes').value = 'SIRH en place avec planning digital et outils collaboratifs. La formation e-learning est utilisée mais pourrait être étendue.';
+
+            // Finance & Admin
+            document.querySelector('input[name="finance"][value="erp_integre"]').checked = true;
+            document.querySelector('input[name="finance"][value="facturation_electronique"]').checked = true;
+            document.querySelector('input[name="finance"][value="reporting_financier"]').checked = true;
+            document.querySelector('input[name="finance"][value="dematerialisation"]').checked = true;
+            document.getElementById('finance_notes').value = 'ERP intégré avec facturation électronique et dématérialisation administrative. Le reporting financier est automatisé.';
+
+            // Infrastructure
+            document.querySelector('input[name="infrastructure"][value="cloud_adoption"]').checked = true;
+            document.querySelector('input[name="infrastructure"][value="parc_moderne"]').checked = true;
+            document.querySelector('input[name="infrastructure"][value="reseau_performant"]').checked = true;
+            document.querySelector('input[name="infrastructure"][value="integration_api"]').checked = true;
+            document.querySelector('input[name="securite"][value="cybersecurite"]').checked = true;
+            document.querySelector('input[name="securite"][value="sauvegarde_auto"]').checked = true;
+            document.querySelector('input[name="securite"][value="rgpd_compliance"]').checked = true;
+            document.getElementById('infrastructure_notes').value = 'Infrastructure cloud moderne avec sécurité avancée. Bonne conformité RGPD et sauvegardes automatiques.';
+
+            // Innovation & Data
+            document.querySelector('input[name="data"][value="business_intelligence"]').checked = true;
+            document.querySelector('input[name="data"][value="data_analytics"]').checked = true;
+            document.querySelector('input[name="data"][value="data_governance"]').checked = true;
+            document.querySelector('input[name="innovation"][value="veille_techno"]').checked = true;
+            document.querySelector('input[name="innovation"][value="roadmap_digitale"]').checked = true;
+            document.getElementById('innovation_notes').value = 'Business Intelligence en place avec analytics avancés. Veille technologique organisée et roadmap digitale définie.';
+
+            // Synthèse
+            document.getElementById('pain_points').value = 'Difficultés de recrutement de profils techniques, concurrence accrue sur le marché, besoin d\'accélérer la transformation digitale pour rester compétitif.';
+            document.getElementById('ambitions').value = 'Croissance de 30% en 2 ans, diversification vers de nouveaux secteurs, amélioration de la productivité de 25%, développement de l\'innovation produit.';
+            document.getElementById('budget_range').value = '50k-100k';
+            document.getElementById('urgency').value = 'important';
+
+            // Sauvegarde automatique
+            saveProgress();
+
+            alert('✅ Données de démonstration chargées !\n\nVous pouvez maintenant générer le rapport pour voir le résultat.');
+        }
+
         // Configuration API dynamique
         const apiConfigs = {
             anthropic: {

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index de Souveraineté Numérique - Auto-évaluation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="../index.html" class="back-link" aria-label="Retour au portail">
+                <span class="back-arrow">←</span> Retour aux outils
+            </a>
+            <h1 class="title">Index de Souveraineté Numérique</h1>
+            <p class="subtitle">Évaluez votre niveau de contrôle et d'indépendance numérique</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Introduction Section -->
+            <section class="intro-section" id="intro">
+                <div class="intro-card">
+                    <div class="intro-icon">🛡️</div>
+                    <h2>Qu'est-ce que la Souveraineté Numérique ?</h2>
+                    <p>La souveraineté numérique représente <strong>la capacité à maintenir le contrôle sur ses ressources numériques et son identité digitale</strong>. Cet outil vous permet d'évaluer votre niveau de souveraineté à travers 4 dimensions clés.</p>
+
+                    <div class="dimensions-preview">
+                        <div class="dimension-chip" data-dimension="control">
+                            <span class="chip-icon">🎮</span>
+                            <span>Contrôle des données</span>
+                        </div>
+                        <div class="dimension-chip" data-dimension="independence">
+                            <span class="chip-icon">🔓</span>
+                            <span>Indépendance</span>
+                        </div>
+                        <div class="dimension-chip" data-dimension="privacy">
+                            <span class="chip-icon">🔐</span>
+                            <span>Vie privée & Sécurité</span>
+                        </div>
+                        <div class="dimension-chip" data-dimension="accessibility">
+                            <span class="chip-icon">♿</span>
+                            <span>Accessibilité</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-large" id="startBtn" aria-label="Commencer l'évaluation">
+                        Commencer l'évaluation
+                        <span class="btn-icon">→</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Assessment Form -->
+            <section class="assessment-section" id="assessment" hidden>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">Question 1 / 20</span>
+                </div>
+
+                <form id="assessmentForm" aria-label="Formulaire d'évaluation">
+                    <!-- Questions will be dynamically inserted here -->
+                </form>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary" id="prevBtn" disabled aria-label="Question précédente">
+                        <span class="btn-icon">←</span> Précédent
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn" aria-label="Question suivante">
+                        Suivant <span class="btn-icon">→</span>
+                    </button>
+                    <button type="button" class="btn btn-success" id="submitBtn" hidden aria-label="Voir les résultats">
+                        Voir mes résultats <span class="btn-icon">📊</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="results" hidden>
+                <div class="results-header">
+                    <h2>Votre Index de Souveraineté Numérique</h2>
+                    <p>Basé sur vos réponses, voici votre niveau de souveraineté numérique</p>
+                </div>
+
+                <div class="overall-score" id="overallScore">
+                    <div class="score-circle" id="scoreCircle">
+                        <span class="score-grade" id="scoreGrade">-</span>
+                        <span class="score-value" id="scoreValue">-/100</span>
+                    </div>
+                    <div class="score-label" id="scoreLabel">Calcul en cours...</div>
+                </div>
+
+                <div class="dimensions-breakdown" id="dimensionsBreakdown">
+                    <!-- Dimension cards will be inserted here -->
+                </div>
+
+                <div class="recommendations-section" id="recommendationsSection">
+                    <h3>Recommandations personnalisées</h3>
+                    <div class="recommendations-list" id="recommendationsList">
+                        <!-- Recommendations will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button class="btn btn-secondary" id="restartBtn" aria-label="Refaire l'évaluation">
+                        <span class="btn-icon">🔄</span> Refaire l'évaluation
+                    </button>
+                    <button class="btn btn-primary" id="exportBtn" aria-label="Exporter les résultats">
+                        <span class="btn-icon">📥</span> Exporter en PDF
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Basé sur les travaux de recherche sur l'Index de Souveraineté Numérique</p>
+            <p>Créé avec ❤️ par Cyril Wolfangel • Open-source et gratuit</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
